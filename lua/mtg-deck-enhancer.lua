@@ -552,8 +552,8 @@ function getSleeveSelectXml()
     local buttonWidth = 75
     local buttonHeight = 100
     local depth = 50
-    local startX = -150
-    local startY = 380
+    local startX = -250
+    local startY = 350
 
     local xml = ""
     local id = 1
@@ -573,7 +573,7 @@ function getSleeveSelectXml()
     end
 
     xml = xml .. [[
-        <InputField id="sleeveInput" position="-675 300 50" rotation="180 180 0" width="1120" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput"></InputField>
+        <InputField id="sleeveInput" position="-775 270 50" rotation="180 180 0" width="1120" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput"></InputField>
     ]]
 
     return [[<Panel id="sleeveSelect" active="false">]] .. xml .. [[</Panel>]]
@@ -585,7 +585,7 @@ function getLandSelectXml()
     local buttonWidth = 75
     local buttonHeight = 100
     local depth = 50
-    local startX = -150
+    local startX = -250
     local startY = 300
 
     local xml = ""
