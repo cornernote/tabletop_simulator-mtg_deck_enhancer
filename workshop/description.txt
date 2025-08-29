@@ -1,0 +1,21 @@
+[size=150][b]Ultimate MTG Deck Enhancement Tool[/b][/size]
+
+Add a touch of flair and immersion to your MTG games with this all-in-one mod bundle! It combines card sleeves from MTG Arena and full-art land cards—instantly transforming your game with rich, authentic visuals.
+
+[b]Highlights:[/b]
+[list]
+[*][b]Sleek MTG Arena-style Card Sleeves[/b] – Bring the signature sleeves from the digital game into your virtual tabletop.
+[*][b]Full-Art Land Collection[/b] – Show off complete sets of gorgeous lands from every major MTG expansion, from Unglued to Unfinity.
+[*][b]Easy Customization[/b] – Compatible with Larikk’s “Custom Card Back Changer” mod; simply right-click to apply custom backs.
+[*][b]Fast and Convenient[/b] – Just subscribe and restart; everything loads ready to play—no extra setup needed.
+[*][b]Low Complexity[/b] – Ideal for both casual players and experienced deckbuilders looking for a visual upgrade.
+[*][b]Seamless Integration[/b] – Works great with MTG Deluxe Table importers: Amuzet’s Chat Importer, Omes’ Playmat Importer, and rikrassen’s tools.
+[/list]
+
+[b]Built with passion and inspired by:[/b]
+[list]
+[*][b]Malixx[/b] – Creator of “[Tool] Every Card Sleeves from MTG Arena.” Your card sleeve collection was the perfect foundation. :contentReference[oaicite:0]{index=0}
+[*][b]Malixx[/b] – Creator of “[Tool] Every Full-Art Lands from Magic: The Gathering.” Your expansive full-art land sets completed the visual overhaul. :contentReference[oaicite:1]{index=1}
+[/list]
+
+[b]Thank you[/b] to these talented modders for their amazing art and tools—without their contributions, this mod wouldn’t exist. Enjoy enhanced visuals, faster deck building, and a game that truly looks legendary!
