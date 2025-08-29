@@ -5,17 +5,17 @@ Add a touch of flair and immersion to your MTG games with this all-in-one mod bu
 [h2]=== FEATURES ===[/h2]
 
 [list]
-[*][b]Sleek MTG Arena-style Card Sleeves[/b] – Bring the signature sleeves from the digital game into your virtual tabletop.
-[*][b]Full-Art Land Collection[/b] – Show off complete sets of gorgeous lands from every major MTG expansion, from Unglued to Unfinity.
-[*][b]Automatic Save[/b] – Your sleeve and land selections are remembered between sessions, so you can jump right back in where you left off.
-[*][b]Easy Customization[/b] – Simply right-click to apply custom backs.
-[*][b]Fast and Convenient[/b] – Just subscribe and open; everything loads ready to play—no extra setup needed.
-[*][b]Low Complexity[/b] – Ideal for both casual players and experienced deckbuilders looking for a visual upgrade.
+[*][b]Sleek MTG Arena-style Card Sleeves[/b] - Bring the signature sleeves from the digital game into your virtual tabletop.
+[*][b]Full-Art Land Collection[/b] - Show off complete sets of gorgeous lands from every major MTG expansion, from Unglued to Unfinity.
+[*][b]Automatic Save[/b] - Your sleeve and land selections are remembered between sessions, so you can jump right back in where you left off.
+[*][b]Easy Customization[/b] - Simply choose your sleeve and lands then drop a deck onto the tool.
+[*][b]Fast and Convenient[/b] - Just subscribe and open; everything loads ready to play—no extra setup needed.
+[*][b]Low Complexity[/b] - Ideal for both casual players and experienced deckbuilders looking for a visual upgrade.
 [/list]
 
 [h2]=== COMPATIBLE MODS ===[/h2]
 
-[b]Seamless Integration[/b] – Works great with MTG Table importers:
+[b]Seamless Integration[/b] - Works great with MTG Table importers:
 
 [list]
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=1838051922]Chat Importer by Amuzet[/url]
@@ -27,8 +27,8 @@ Add a touch of flair and immersion to your MTG games with this all-in-one mod bu
 
 [b]Built with passion and inspired by:[/b]
 [list]
-[*][b]Malixx[/b] – Creator of “[Tool] Every Card Sleeves from MTG Arena.” Your card sleeve collection was the perfect foundation. :contentReference[oaicite:0]{index=0}
-[*][b]Malixx[/b] – Creator of “[Tool] Every Full-Art Lands from Magic: The Gathering.” Your expansive full-art land sets completed the visual overhaul. :contentReference[oaicite:1]{index=1}
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2690150731]Every Card Sleeves from MTG Arena by Malixx[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2676515743]Every Full-Art Lands from Magic: The Gathering by Malixx[/url]
 [/list]
 
 [b]Thank you[/b] for the amazing art and tools - without these contributions, this mod wouldn't exist.
