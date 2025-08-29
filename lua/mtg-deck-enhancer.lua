@@ -394,37 +394,43 @@ function onLoad(save_state)
     })
 end
 
-function tryObjectEnterContainer(container, object)
-    if container == self then
-        local data = object.getData()
-        return data.Name == "Card" or data.Name == "CardCustom" or data.Name == "Deck"
+function onObjectEnterContainer(container, object)
+    if container ~= self then
+        return
     end
 
-    return false
+    local data = object.getData()
+
+    if data.Name ~= "Card" and data.Name ~= "CardCustom" and data.Name ~= "Deck" and data.Name ~= "DeckCustom" then
+        print("WARNING: Expected Deck or Card to be dropped, instead got " .. tostring(data.Name) .. ". Ejecting object!")
+        emptyContainer(container, false)
+
+        return
+    end
+
+    updateDeckData(data)
+    spawnObjectData({
+        data = data,
+        position = self.getPosition() + Vector(0, 0, -4),
+        rotation = self.getRotation() + Vector(180, 180, 0),
+    })
+
+    emptyContainer(container, true)
 end
 
-function onObjectEnterContainer(container, object)
-    if container == self then
-        local data = object.getData()
+function emptyContainer(container, destroy, pos)
+    local count = container.getQuantity()
 
-        updateDeckData(data)
-        spawnObjectData({
-            data = data,
-            position = self.getPosition() + Vector(0, 0, -4),
-            rotation = self.getRotation() + Vector(180, 180, 0),
+    for _ = 1, count do
+        local object = container.takeObject({
+            position = pos or container.getPosition() + Vector(0, 2, -4),
+            rotation = self.getRotation() + Vector(180, 180, 180),
+            smooth = true,
         })
 
-        emptyContainer(container)
-    end
-end
-
-function emptyContainer(container, pos)
-    pos = pos or container.getPosition() + Vector(0, 2, 0)
-
-    local count = container.getQuantity()
-    for _ = 1, count do
-        local object = container.takeObject()
-        object.destroy()
+        if (destroy) then
+            object.destroy()
+        end
     end
 end
 
@@ -440,8 +446,6 @@ function updateDeckData(data)
         end
 
         updateCustomDeckLands(data)
-    else
-        error("Invalid object of type " .. tostring(data.Name))
     end
 end
 
