@@ -409,28 +409,41 @@ function onObjectEnterContainer(container, object)
     end
 
     updateDeckData(data)
-    spawnObjectData({
+
+    local outputDeck = spawnObjectData({
         data = data,
-        position = self.getPosition() + Vector(0, 0, -4),
+        position = self.getPosition(),
         rotation = self.getRotation() + Vector(180, 180, 0),
     })
+
+    outputDeck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
 
     emptyContainer(container, true)
 end
 
-function emptyContainer(container, destroy, pos)
+function emptyContainer(container, destroy, pos, rot)
     local count = container.getQuantity()
+    local basePos = pos or container.getPosition() + Vector(0, 4, -4)
+    local baseRot = rot or container.getRotation() + Vector(180, 180, 180)
 
     for _ = 1, count do
-        local object = container.takeObject({
-            position = pos or container.getPosition() + Vector(0, 2, -4),
-            rotation = self.getRotation() + Vector(180, 180, 180),
+        local obj = container.takeObject({
+            position = basePos,
+            rotation = baseRot,
             smooth = true,
         })
 
-        if (destroy) then
-            object.destroy()
-        end
+        Wait.frames(function()
+            if obj then
+                local size = obj.getBoundsNormalized().size
+                local adjustedPos = basePos + Vector(0, 0, -size.z / 2)
+                obj.setPositionSmooth(adjustedPos, false, true)
+            end
+
+            if destroy and obj then
+                obj.destroy()
+            end
+        end, 1)
     end
 end
 
