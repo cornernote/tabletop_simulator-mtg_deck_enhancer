@@ -1,3 +1,9 @@
+-- ULTIMATE MTG Deck Enhancer by CoRNeRNoTe
+-- Adds card sleeves and full-art lands for enhanced deck visuals.
+
+-- Most recent script can be found on GitHub:
+-- https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer/blob/main/lua/mtg-deck-enhancer.lua
+
 local defaults = {
     sleeve = "https://steamusercontent-a.akamaihd.net/ugc/1869555872447018243/605ECC61FD27EE474845AA7CC2AAC1AB2984DECB/",
     plains = "https://cards.scryfall.io/png/front/4/0/4069fb4a-8ee1-41ef-ab93-39a8cc58e0e5.png",
@@ -426,7 +432,7 @@ function updateDeckData(data)
     if data.Name == "Card" or data.Name == "CardCustom" then
         updateCustomDeckBackURL(data)
         updateCustomDeckLand(data)
-    elseif data.Name == "Deck" then
+    elseif data.Name == "Deck" or data.Name == "DeckCustom" then
         updateCustomDeckBackURL(data)
 
         for _, cardData in pairs(data.ContainedObjects) do
@@ -472,16 +478,32 @@ function updateCustomDeckLands(data)
 
         local url = getLandImage(card.Nickname)
         if url then
-            for _, entry in pairs(card.CustomDeck) do
-                entry.FaceURL = url
+            if card.CustomDeck then
+                for _, entry in pairs(card.CustomDeck) do
+                    entry.FaceURL = url
+                end
+            else
+                card.FaceURL = url
             end
 
-            local entryId = tonumber(tostring(card.CardID):sub(1, 6))
-            if data.CustomDeck[entryId] then
+            -- find and update the entry in the deck.CustomDeck
+            local entryId = getDeckEntryId(card.CardID, data.CustomDeck)
+            if entryId then
                 data.CustomDeck[entryId].FaceURL = url
             end
         end
     end
+end
+
+function getDeckEntryId(cardId, customDeck)
+    local idStr = tostring(cardId)
+    for i = #idStr, 1, -1 do
+        local key = tonumber(idStr:sub(1, i))
+        if customDeck[key] then
+            return key
+        end
+    end
+    return nil -- no match
 end
 
 function getLandImage(name)
@@ -643,8 +665,8 @@ function getSelectionXml()
                 <Image position="-125 140 50" rotation="180 180 0" width="45" height="60" image="%s" id="forestPreview" />
             </Panel>
             <Panel id="config" active="false">
-                <Button id="groupLandsButtonOff" position="-10 140 50" rotation="180 180 0" width="150" height="40" fontSize="20" onClick="toggleGroupLands(0)">Ungroup Lands</Button>
-                <Button id="groupLandsButtonOn" active="false" position="-10 140 50" rotation="180 180 0" width="150" height="40" fontSize="20" onClick="toggleGroupLands(1)">Group Lands</Button>
+                <Button id="groupLandsButtonOff" position="0 120 50" rotation="180 180 0" width="150" height="40" fontSize="20" onClick="toggleGroupLands(0)">Ungroup Lands</Button>
+                <Button id="groupLandsButtonOn" active="false" position="0 120 50" rotation="180 180 0" width="150" height="40" fontSize="20" onClick="toggleGroupLands(1)">Group Lands</Button>
                 <Button position="-340 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="sleeve" onClick="showSleeveSelectUI" />
                 <Button position="-660 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="plains" onClick="showLandSelectUI(plains)" />
                 <Button position="-980 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="island" onClick="showLandSelectUI(island)" />

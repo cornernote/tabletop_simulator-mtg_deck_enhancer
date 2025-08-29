@@ -1,16 +1,29 @@
-[size=150][b]Ultimate MTG Deck Enhancement Tool[/b][/size]
+[h1]Ultimate MTG Deck Enhancement Tool[/h1]
 
-Add a touch of flair and immersion to your MTG games with this all-in-one mod bundle! It combines card sleeves from MTG Arena and full-art land cards—instantly transforming your game with rich, authentic visuals.
+Add a touch of flair and immersion to your MTG games with this all-in-one mod bundle! Transform your deck with card sleeves from MTG Arena and full-art land cards—instantly transforming your game with rich, authentic visuals.
 
-[b]Highlights:[/b]
+[h2]=== FEATURES ===[/h2]
+
 [list]
 [*][b]Sleek MTG Arena-style Card Sleeves[/b] – Bring the signature sleeves from the digital game into your virtual tabletop.
 [*][b]Full-Art Land Collection[/b] – Show off complete sets of gorgeous lands from every major MTG expansion, from Unglued to Unfinity.
-[*][b]Easy Customization[/b] – Compatible with Larikk’s “Custom Card Back Changer” mod; simply right-click to apply custom backs.
-[*][b]Fast and Convenient[/b] – Just subscribe and restart; everything loads ready to play—no extra setup needed.
+[*][b]Automatic Save[/b] – Your sleeve and land selections are remembered between sessions, so you can jump right back in where you left off.
+[*][b]Easy Customization[/b] – Simply right-click to apply custom backs.
+[*][b]Fast and Convenient[/b] – Just subscribe and open; everything loads ready to play—no extra setup needed.
 [*][b]Low Complexity[/b] – Ideal for both casual players and experienced deckbuilders looking for a visual upgrade.
-[*][b]Seamless Integration[/b] – Works great with MTG Deluxe Table importers: Amuzet’s Chat Importer, Omes’ Playmat Importer, and rikrassen’s tools.
 [/list]
+
+[h2]=== COMPATIBLE MODS ===[/h2]
+
+[b]Seamless Integration[/b] – Works great with MTG Table importers:
+
+[list]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=1838051922]Chat Importer by Amuzet[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2163084841]Playmat Importer by Omes[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2265064081]Deck Importer by rikrassen[/url]
+[/list]
+
+[h2]=== CREDITS AND THANKS ===[/h2]
 
 [b]Built with passion and inspired by:[/b]
 [list]
@@ -18,4 +31,10 @@ Add a touch of flair and immersion to your MTG games with this all-in-one mod bu
 [*][b]Malixx[/b] – Creator of “[Tool] Every Full-Art Lands from Magic: The Gathering.” Your expansive full-art land sets completed the visual overhaul. :contentReference[oaicite:1]{index=1}
 [/list]
 
-[b]Thank you[/b] to these talented modders for their amazing art and tools—without their contributions, this mod wouldn’t exist. Enjoy enhanced visuals, faster deck building, and a game that truly looks legendary!
+[b]Thank you[/b] for the amazing art and tools - without these contributions, this mod wouldn't exist.
+
+[h2]=== RESOURCES ===[/h2]
+
+[list]
+[*] [url=https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer] Assets and a copy of the savegame on GitHub[/url]
+[/list]
