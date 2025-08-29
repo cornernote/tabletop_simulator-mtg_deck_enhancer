@@ -354,6 +354,11 @@ local landImages = {
     { type = "swamp", url = "https://c1.scryfall.com/file/scryfall-cards/large/front/f/5/f52b53b7-4a20-48eb-a0bd-4ddf40aae740.jpg", group = "39" },
     { type = "mountain", url = "https://c1.scryfall.com/file/scryfall-cards/large/front/2/7/277af45a-1f91-4fd4-804d-5b34241386b8.jpg", group = "39" },
     { type = "forest", url = "https://c1.scryfall.com/file/scryfall-cards/large/front/2/a/2a9e6cdc-f92f-497c-8cd9-b69586098512.jpg", group = "39" },
+    { type = "plains", url = "https://c1.scryfall.com/file/scryfall-cards/large/front/1/1/1164f7ec-7b2f-4cc9-90bb-7eaaa331b4cd.jpg", group = "39" },
+    { type = "island", url = "https://c1.scryfall.com/file/scryfall-cards/large/front/d/5/d59cb0b5-fd4f-4dde-a69f-7ca6aa12b89f.jpg", group = "39" },
+    { type = "swamp", url = "https://c1.scryfall.com/file/scryfall-cards/large/front/5/c/5cb03b18-d74c-4c89-9539-3549d2e8ff5f.jpg", group = "39" },
+    { type = "mountain", url = "https://c1.scryfall.com/file/scryfall-cards/large/front/b/0/b044630d-50e7-431b-8e91-bd53e967f594.jpg", group = "39" },
+    { type = "forest", url = "https://c1.scryfall.com/file/scryfall-cards/large/front/7/b/7b6c2532-be5a-4f1f-893c-36bcda2a699d.jpg", group = "39" },
 }
 
 local groupLands = true
@@ -382,7 +387,7 @@ function onLoad(save_state)
     self.UI.setXml(getLandSelectXml() .. getLandTypesSelectXml() .. getSleeveSelectXml() .. getSelectionXml())
 
     self.createButton({
-        click_function = "noop",
+        click_function = "null",
         function_owner = self,
         label = "MTG Deck\nEnhancer",
         position = { 0, -0.3, -1.3 },
@@ -598,7 +603,7 @@ end
 
 function getLandSelectXml()
     local cols = 25
-    local rows = 8
+    local rows = 9
     local buttonWidth = 75
     local buttonHeight = 100
     local depth = 50
@@ -832,7 +837,4 @@ function toggleConfig()
     end
 
     hideAllSelects()
-end
-
-function noop()
 end
