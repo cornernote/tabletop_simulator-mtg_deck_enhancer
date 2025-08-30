@@ -141,16 +141,6 @@ local sleeveImages = {
     "https://steamusercontent-a.akamaihd.net/ugc/1869555872447092649/5D53A845E4C95853472DFBEDAFF88627B8B24B2C/",
     "https://steamusercontent-a.akamaihd.net/ugc/1869555872447094271/61794AD46ED311761FC67901C6A37FFE7E8EDD42/",
     "https://steamusercontent-a.akamaihd.net/ugc/1869555872447095841/8C84315F66A9FC5ABC12B83F51DF71D387D77842/",
-    defaults.sleeve,
-    defaults.sleeve,
-    defaults.sleeve,
-    defaults.sleeve,
-    defaults.sleeve,
-    defaults.sleeve,
-    defaults.sleeve,
-    defaults.sleeve,
-    defaults.sleeve,
-    defaults.sleeve,
 }
 
 local landImages = {
@@ -584,12 +574,22 @@ function getSleeveSelectXml()
         for col = 0, cols - 1 do
             local posX = startX - (col * buttonWidth)
             local posY = startY + (row * buttonHeight)
-            local image = sleeveImages[id] or ""
-            xml = xml .. string.format([[
-                <Button id="sleeve%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="sleeveClicked(%s)" />
-            ]],
-                    id, posX, posY, depth, buttonWidth, buttonHeight, image, image
-            )
+            local image = sleeveImages[id]
+
+            if image then
+                xml = xml .. string.format([[
+                    <Button id="sleeve%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="sleeveClicked(%s)" />
+                ]],
+                        id, posX, posY, depth, buttonWidth, buttonHeight, image, image
+                )
+            else
+                xml = xml .. string.format([[
+                    <Button id="sleeve%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="hideAllSelects" />
+                ]],
+                        id, posX, posY, depth, buttonWidth, buttonHeight, defaults.sleeve
+                )
+            end
+
             id = id + 1
         end
     end
@@ -617,12 +617,22 @@ function getLandSelectXml()
         for col = 0, cols - 1 do
             local posX = startX - (col * buttonWidth)
             local posY = startY + (row * buttonHeight)
-            local image = landImages[id] or { type = "", url = "" }
-            xml = xml .. string.format([[
-                <Button id="land%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="landClicked(%s)" />
-            ]],
-                    id, posX, posY, depth, buttonWidth, buttonHeight, image.url, image.url
-            )
+            local image = landImages[id]
+
+            if image then
+                xml = xml .. string.format([[
+                    <Button id="land%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="landClicked(%s)" />
+                ]],
+                        id, posX, posY, depth, buttonWidth, buttonHeight, image.url, image.url
+                )
+            else
+                xml = xml .. string.format([[
+                    <Button id="land%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="hideAllSelects" />
+                ]],
+                        id, posX, posY, depth, buttonWidth, buttonHeight, defaults.sleeve
+                )
+            end
+
             id = id + 1
         end
     end
@@ -662,12 +672,22 @@ function getLandTypeSelectXml(type)
         for col = 0, cols - 1 do
             local posX = startX - (col * buttonWidth)
             local posY = startY + (row * buttonHeight)
-            local image = landTypeImages[id] or { type = "", url = "" }
-            xml = xml .. string.format([[
+            local image = landTypeImages[id]
+
+            if image then
+                xml = xml .. string.format([[
                 <Button id="%s%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="%sClicked(%s)" />
             ]],
-                    type, id, posX, posY, depth, buttonWidth, buttonHeight, image.url, type, image.url
-            )
+                        type, id, posX, posY, depth, buttonWidth, buttonHeight, image.url, type, image.url
+                )
+            else
+                xml = xml .. string.format([[
+                <Button id="%s%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="hideAllSelects" />
+            ]],
+                        type, id, posX, posY, depth, buttonWidth, buttonHeight, defaults.sleeve
+                )
+            end
+
             id = id + 1
         end
     end
