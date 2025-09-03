@@ -1260,7 +1260,7 @@ function getSleeveSelectXml()
     local rows = 9
     local buttonWidth = 75
     local buttonHeight = 100
-    local depth = 50
+    local depth = 45
     local startX = -250
     local startY = 350
 
@@ -1286,7 +1286,7 @@ function getSleeveSelectXml()
     end
 
     xml = xml .. [[
-        <InputField id="sleeveInput" position="-775 270 50" rotation="180 180 0" width="1120" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput"></InputField>
+        <InputField id="sleeveInput" position="-775 270 45" rotation="180 180 0" width="1120" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput"></InputField>
     ]]
 
     return [[<Panel id="sleeveSelect" active="false">]] .. xml .. [[</Panel>]]
@@ -1296,7 +1296,7 @@ function getLandSelectXml()
     local cols = 25
     local buttonWidth = 75
     local buttonHeight = 100
-    local depth = 50
+    local depth = 45
     local startX = -250
     local startY = 300
     local xml = ""
@@ -1335,7 +1335,7 @@ function getLandTypeSelectXml(landType)
     local cols = 25
     local buttonWidth = 75
     local buttonHeight = 100
-    local depth = 50
+    local depth = 45
     local startX = -250
     local startY = 300
     local xml = ""
@@ -1367,36 +1367,36 @@ function getSelectionXml()
     return string.format([[
             <Button position="0 0 -52" rotation="180 180 0" width="50" height="50" image="https://cdn-icons-png.flaticon.com/512/3592/3592953.png" id="forest" onClick="toggleConfig" />
             <Panel id="preview">
-                <Image position="125 140 50" rotation="180 180 0" width="45" height="60" image="%s" id="sleevePreview" />
-                <Image position="75 140 50" rotation="180 180 0" width="45" height="60" image="%s" id="plainsPreview" />
-                <Image position="25 140 50" rotation="180 180 0" width="45" height="60" image="%s" id="islandPreview" />
-                <Image position="-25 140 50" rotation="180 180 0" width="45" height="60" image="%s" id="swampPreview" />
-                <Image position="-75 140 50" rotation="180 180 0" width="45" height="60" image="%s" id="mountainPreview" />
-                <Image position="-125 140 50" rotation="180 180 0" width="45" height="60" image="%s" id="forestPreview" />
+                <Image position="125 140 45" rotation="180 180 0" width="45" height="60" image="%s" id="sleevePreview" />
+                <Image position="75 140 45" rotation="180 180 0" width="45" height="60" image="%s" id="plainsPreview" />
+                <Image position="25 140 45" rotation="180 180 0" width="45" height="60" image="%s" id="islandPreview" />
+                <Image position="-25 140 45" rotation="180 180 0" width="45" height="60" image="%s" id="swampPreview" />
+                <Image position="-75 140 45" rotation="180 180 0" width="45" height="60" image="%s" id="mountainPreview" />
+                <Image position="-125 140 45" rotation="180 180 0" width="45" height="60" image="%s" id="forestPreview" />
             </Panel>
             <Panel id="config" active="false">
-                <Button id="groupLandsButtonOff" position="0 120 50" rotation="180 180 0" width="150" height="40" fontSize="20" onClick="toggleGroupLands(0)">Ungroup Lands</Button>
-                <Button id="groupLandsButtonOn" active="false" position="0 120 50" rotation="180 180 0" width="150" height="40" fontSize="20" onClick="toggleGroupLands(1)">Group Lands</Button>
-                <Button position="-340 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="sleeve" onClick="showSleeveSelectUI" />
-                <Button position="-660 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="plains" onClick="showLandSelectUI(plains)" />
-                <Button position="-980 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="island" onClick="showLandSelectUI(island)" />
-                <Button position="-1300 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="swamp" onClick="showLandSelectUI(swamp)" />
-                <Button position="-1620 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="mountain" onClick="showLandSelectUI(mountain)" />
-                <Button position="-1940 0 50" rotation="180 180 0" width="300" height="390" image="%s" id="forest" onClick="showLandSelectUI(forest)" />
-                <Text position="-340 200 50" rotation="180 180 0" width="230" height="100" color="white" fontSize="24">Select Sleeve</Text>
+                <Button id="groupLandsButtonOff" position="0 120 45" rotation="180 180 0" width="150" height="40" fontSize="20" onClick="toggleGroupLands(0)">Ungroup Lands</Button>
+                <Button id="groupLandsButtonOn" active="false" position="0 120 45" rotation="180 180 0" width="150" height="40" fontSize="20" onClick="toggleGroupLands(1)">Group Lands</Button>
+                <Button position="-340 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="sleeve" onClick="showSleeveSelectUI" />
+                <Button position="-660 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="plains" onClick="showLandSelectUI(plains)" />
+                <Button position="-980 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="island" onClick="showLandSelectUI(island)" />
+                <Button position="-1300 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="swamp" onClick="showLandSelectUI(swamp)" />
+                <Button position="-1620 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="mountain" onClick="showLandSelectUI(mountain)" />
+                <Button position="-1940 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="forest" onClick="showLandSelectUI(forest)" />
+                <Text position="-340 200 45" rotation="180 180 0" width="230" height="100" color="white" fontSize="24">Select Sleeve</Text>
                 <Panel id="groupLandsTexts">
-                    <Text position="-660 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
-                    <Text position="-980 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
-                    <Text position="-1300 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
-                    <Text position="-1620 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
-                    <Text position="-1940 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
+                    <Text position="-660 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
+                    <Text position="-980 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
+                    <Text position="-1300 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
+                    <Text position="-1620 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
+                    <Text position="-1940 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
                 </Panel>
                 <Panel id="ungroupLandsTexts" active="false">
-                    <Text position="-660 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Plains</Text>
-                    <Text position="-980 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Island</Text>
-                    <Text position="-1300 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Swamp</Text>
-                    <Text position="-1620 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Mountain</Text>
-                    <Text position="-1940 200 50" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Forest</Text>
+                    <Text position="-660 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Plains</Text>
+                    <Text position="-980 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Island</Text>
+                    <Text position="-1300 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Swamp</Text>
+                    <Text position="-1620 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Mountain</Text>
+                    <Text position="-1940 200 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Forest</Text>
                 </Panel>
             </Panel>
         ]],
