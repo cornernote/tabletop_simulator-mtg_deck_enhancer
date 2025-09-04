@@ -2,13 +2,19 @@
 
 Add a touch of flair and immersion to your MTG games with this all-in-one mod bundle! Transform your deck with card sleeves from MTG Arena and full-art land cards—instantly transforming your game with rich, authentic visuals.
 
+[h2]=== TOOLS ===[/h2]
+
+[list]
+[*][b]Sleeve Changer[/b] - Bring custom sleeves from into your own decks.
+[*][b]Land Swapper[/b] - With 600+ Full-Art lands, show off your deck with gorgeous lands from every major MTG expansion
+[*][b]Deck Sorter[/b] - Multiple sorting options and lightning fast to sort even the largest decks
+[/list]
+
 [h2]=== FEATURES ===[/h2]
 
 [list]
-[*][b]Sleek MTG Arena-style Card Sleeves[/b] - Bring the signature sleeves from the digital game into your virtual tabletop.
-[*][b]600+ Full-Art Land Collection[/b] - Show off complete sets of gorgeous lands from every major MTG expansion, from Unglued to Unfinity.
-[*][b]Automatic Save[/b] - Your sleeve and land selections are remembered between sessions, so you can jump right back in where you left off.
-[*][b]Easy Customization[/b] - Simply choose your sleeve and lands then drop a deck onto the tool.
+[*][b]Automatic Save[/b] - Your configuration, sleeve and land selections are remembered between sessions, so you can jump right back in where you left off.
+[*][b]Easy Customization[/b] - Simply choose your options then drop a deck onto the tool.
 [*][b]Fast and Convenient[/b] - Just subscribe and open; everything loads ready to play—no extra setup needed.
 [*][b]Low Complexity[/b] - Ideal for both casual players and experienced deckbuilders looking for a visual upgrade.
 [/list]
