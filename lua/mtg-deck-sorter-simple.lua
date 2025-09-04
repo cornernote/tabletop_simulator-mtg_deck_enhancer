@@ -5,17 +5,21 @@
 -- https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer/blob/main/lua/mtg-deck-sorter-simple.lua
 
 function onObjectEnterContainer(container, object)
+    -- ignore objects entering other containers
     if container ~= self then
         return
     end
 
+    -- get the deck data
     local deckData = object.getData()
 
+    -- ensure we have a deck
     if deckData.Name ~= "Deck" and deckData.Name ~= "DeckCustom" then
+        broadcastAll("Not a deck...")
         return
     end
 
-    -- sort the ContainedObjects
+    -- sort the ContainedObjects, modify as needed for your sorting requirements
     table.sort(deckData.ContainedObjects, function(a, b)
         return a.Nickname < b.Nickname -- ends up with A on bottom and Z on top when looking at the face
     end)
@@ -26,10 +30,12 @@ function onObjectEnterContainer(container, object)
         table.insert(deckData.DeckIDs, card.CardID)
     end
 
+    -- spawn a new deck near the bag
     spawnObjectData({
         data = deckData,
         position = self.getPosition() + Vector(0, 4, -4),
     })
 
+    -- destroy the original deck
     container.takeObject().destroy()
 end
