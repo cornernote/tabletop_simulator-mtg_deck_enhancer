@@ -50,7 +50,8 @@ function onLoad(save_state)
         click_function = "null",
         function_owner = self,
         label = "MTG Deck\nSorter",
-        position = { 0, -0.3, -1.3 },
+        position = { 0, -0.5, 1.3 },
+        rotation = { 180, 0, 180 },
         color = { 0.1, 0.1, 0.1, 1 },
         font_color = { 1, 1, 1, 1 },
         width = 0,
@@ -87,7 +88,7 @@ function onObjectEnterContainer(container, object)
     local outputDeck = spawnObjectData({
         data = deckData,
         position = self.getPosition(),
-        rotation = self.getRotation() + Vector(180, 180, 180),
+        rotation = self.getRotation() + Vector(0, 180, 0),
     })
 
     outputDeck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
@@ -169,9 +170,9 @@ end
 
 function getConfigXml()
     return [[
-        <Button position="0 0 -52" rotation="180 180 0" width="50" height="50" image="https://cdn-icons-png.flaticon.com/512/3592/3592953.png" onClick="toggleConfig" />
+        <Button position="0 0 -52" width="50" height="50" image="https://cdn-icons-png.flaticon.com/512/3592/3592953.png" onClick="toggleConfig" />
 
-        <Panel id="config" active="false" width="300" height="70" offsetXY="0 150" rotation="180 180 0" color="#FFFFFF" outline="#666666" outlineSize="2 -2">
+        <Panel id="config" active="false" width="300" height="70" offsetXY="0 -150" color="#FFFFFF" outline="#666666" outlineSize="2 -2">
             <Row color="#999999" width="300">
                 <Text id="WindowTitle" text="Config Options" fontSize="18" fontStyle="Bold" color="#000000" rectAlignment="UpperCenter" alignment="LowerCenter" width="230" height="80" offsetXY="0 55" />
             </Row>

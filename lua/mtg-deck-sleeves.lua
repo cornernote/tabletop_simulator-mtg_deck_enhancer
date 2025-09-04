@@ -162,7 +162,8 @@ function onLoad(save_state)
         click_function = "null",
         function_owner = self,
         label = "MTG Deck\nSleeves",
-        position = { 0, -0.3, -1.3 },
+        position = { 0, -0.5, 1.3 },
+        rotation = { 180, 0, 180 },
         color = { 0.1, 0.1, 0.1, 1 },
         font_color = { 1, 1, 1, 1 },
         width = 0,
@@ -190,7 +191,7 @@ function onObjectEnterContainer(container, object)
     local outputDeck = spawnObjectData({
         data = data,
         position = self.getPosition(),
-        rotation = self.getRotation() + Vector(180, 180, 0),
+        rotation = self.getRotation() + Vector(0, 180, 180),
     })
 
     outputDeck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
@@ -262,28 +263,29 @@ function hideAllSelects(except)
 end
 
 function getSleeveSelectXml()
-    local cols = 15
+    local cols = 20
     local rows = 9
     local buttonWidth = 75
     local buttonHeight = 100
-    local depth = 45
-    local startX = -250
-    local startY = 350
 
     local xml = ""
     local id = 1
 
     for row = 0, rows - 1 do
         for col = 0, cols - 1 do
-            local posX = startX - (col * buttonWidth)
-            local posY = startY + (row * buttonHeight)
             local image = sleeveImages[id]
 
             if image then
+                if col == 0 and row > 0 then
+                    xml = xml .. [[</Row><Row preferredHeight="100">]]
+                end
+
                 xml = xml .. string.format([[
-                    <Button id="sleeve%d" position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="sleeveClicked(%s)" />
+                    <Cell>
+                        <Button id="sleeve%d" width="%d" height="%d" image="%s" onClick="sleeveClicked(%s)" />
+                    </Cell>
                 ]],
-                        id, posX, posY, depth, buttonWidth, buttonHeight, image, image
+                        id, buttonWidth, buttonHeight, image, image
                 )
             end
 
@@ -291,24 +293,30 @@ function getSleeveSelectXml()
         end
     end
 
-    xml = xml .. [[
-        <InputField id="sleeveInput" position="-775 270 45" rotation="180 180 0" width="1120" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput"></InputField>
-    ]]
-
-    return [[<Panel id="sleeveSelect" active="false">]] .. xml .. [[</Panel>]]
+    return string.format([[
+        <VerticalScrollView id="sleeveSelect" active="false" width="1520" height="740" position="1000 -580 45" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
+            <TableLayout width="1500" height="%d">
+                <Row preferredHeight="40">
+                    <InputField id="sleeveInput" width="1480" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput" />
+                </Row>
+                <Row preferredHeight="%d">]] .. xml .. [[</Row>
+            </TableLayout>
+        </VerticalScrollView>
+    ]],
+            (math.floor(id / cols)) * buttonHeight + 40, buttonHeight)
 end
 
 function getSelectionXml()
     return string.format([[
-            <Button position="0 0 -52" rotation="180 180 0" width="50" height="50" image="https://cdn-icons-png.flaticon.com/512/3592/3592953.png" onClick="toggleConfig" />
+            <Button position="0 0 -52" width="50" height="50" image="https://cdn-icons-png.flaticon.com/512/3592/3592953.png" onClick="toggleConfig" />
 
             <Panel id="preview">
-                <Image position="0 140 45" rotation="180 180 0" width="100" height="133" image="%s" id="sleevePreview" />
+                <Image position="0 -140 45" width="100" height="133" image="%s" id="sleevePreview" />
             </Panel>
 
             <Panel id="selection" active="false">
-                <Button position="-340 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="sleeve" onClick="showSleeveSelectUI" />
-                <Text position="-340 210 45" rotation="180 180 0" width="230" height="100" color="white" fontSize="24">Select Sleeve</Text>
+                <Button position="340 0 45" width="300" height="390" image="%s" id="sleeve" onClick="showSleeveSelectUI" />
+                <Text position="340 -210 45" width="300" height="100" color="white" fontSize="24">Select Sleeve</Text>
             </Panel>
         ]],
             selections.sleeve, selections.sleeve

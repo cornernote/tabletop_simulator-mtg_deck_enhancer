@@ -949,7 +949,8 @@ function onLoad(save_state)
         click_function = "null",
         function_owner = self,
         label = "MTG Deck\nLands",
-        position = { 0, -0.3, -1.3 },
+        position = { 0, -0.5, 1.3 },
+        rotation = { 180, 0, 180 },
         color = { 0.1, 0.1, 0.1, 1 },
         font_color = { 1, 1, 1, 1 },
         width = 0,
@@ -977,7 +978,7 @@ function onObjectEnterContainer(container, object)
     local outputDeck = spawnObjectData({
         data = data,
         position = self.getPosition(),
-        rotation = self.getRotation() + Vector(180, 180, 0),
+        rotation = self.getRotation() + Vector(0, 180, 0),
     })
 
     outputDeck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
@@ -1067,7 +1068,6 @@ function getDeckEntryId(cardId, customDeck)
             return key
         end
     end
-    return nil -- no match
 end
 
 function getLandImage(name)
@@ -1113,9 +1113,6 @@ function getLandSelectXml()
     local cols = 20
     local buttonWidth = 75
     local buttonHeight = 100
-    local depth = 45
-    local startX = -250
-    local startY = 330
     local xml = ""
     local index = 0
 
@@ -1124,20 +1121,30 @@ function getLandSelectXml()
             local col = index % cols
             local row = math.floor(index / cols)
 
-            local posX = startX - (col * buttonWidth)
-            local posY = startY + (row * buttonHeight)
+            if col == 0 and row > 0 then
+                xml = xml .. [[</Row><Row preferredHeight="100">]]
+            end
 
             xml = xml .. string.format([[
-                <Button position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="landClicked(%s)" />
+                <Cell>
+                    <Button width="%d" height="%d" image="%s" onClick="landClicked(%s)" />
+                </Cell>
             ]],
-                    posX, posY, depth, buttonWidth, buttonHeight, urlPrefix .. "small" .. image, groupName
+                    buttonWidth, buttonHeight, urlPrefix .. "small" .. image, groupName
             )
 
             index = index + 1
         end
     end
 
-    return [[<Panel id="landSelect" active="false">]] .. xml .. [[</Panel>]]
+    return string.format([[
+        <VerticalScrollView id="landSelect" active="false" width="1520" height="800" position="1000 -680 45" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
+            <TableLayout width="1500" height="%d">
+                <Row preferredHeight="%d">]] .. xml .. [[</Row>
+            </TableLayout>
+        </VerticalScrollView>
+    ]],
+            (math.floor(index / cols) + 1) * buttonHeight, buttonHeight)
 end
 
 function getLandTypesSelectXml()
@@ -1152,9 +1159,6 @@ function getLandTypeSelectXml(landType)
     local cols = 20
     local buttonWidth = 75
     local buttonHeight = 100
-    local depth = 45
-    local startX = -250
-    local startY = 330
     local xml = ""
     local index = 0
 
@@ -1164,39 +1168,49 @@ function getLandTypeSelectXml(landType)
             local col = index % cols
             local row = math.floor(index / cols)
 
-            local posX = startX - (col * buttonWidth)
-            local posY = startY + (row * buttonHeight)
+            if col == 0 and row > 0 then
+                xml = xml .. [[</Row><Row preferredHeight="100">]]
+            end
 
             xml = xml .. string.format([[
-                <Button position="%d %d %d" rotation="180 180 0" width="%d" height="%d" image="%s" onClick="%sClicked(%s)" />
+                <Cell>
+                    <Button width="%d" height="%d" image="%s" onClick="%sClicked(%s)" />
+                </Cell>
             ]],
-                    posX, posY, depth, buttonWidth, buttonHeight, urlPrefix .. "small" .. image, landType, image
+                    buttonWidth, buttonHeight, urlPrefix .. "small" .. image, landType, image
             )
 
             index = index + 1
         end
     end
 
-    return [[<Panel id="]] .. landType .. [[Select" active="false">]] .. xml .. [[</Panel>]]
+    return string.format([[
+        <VerticalScrollView id="]] .. landType .. [[Select" active="false" width="1520" height="800" position="1000 -680 45" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
+            <TableLayout width="1500" height="%d">
+                <Row preferredHeight="%d">]] .. xml .. [[</Row>
+            </TableLayout>
+        </VerticalScrollView>
+    ]],
+            (math.floor(index / cols) + 1) * buttonHeight, buttonHeight)
 end
 
 function getSelectionXml()
     return string.format([[
-            <Button position="0 0 -52" rotation="180 180 0" width="50" height="50" image="https://cdn-icons-png.flaticon.com/512/3592/3592953.png" onClick="toggleConfig" />
+            <Button position="0 0 -52" width="50" height="50" image="https://cdn-icons-png.flaticon.com/512/3592/3592953.png" onClick="toggleConfig" />
 
             <Panel id="preview">
-                <Image position="200 140 45" rotation="180 180 0" width="100" height="133" image="%s" id="plainsPreview" />
-                <Image position="100 140 45" rotation="180 180 0" width="100" height="133" image="%s" id="islandPreview" />
-                <Image position="0 140 45" rotation="180 180 0" width="100" height="133" image="%s" id="swampPreview" />
-                <Image position="-100 140 45" rotation="180 180 0" width="100" height="133" image="%s" id="mountainPreview" />
-                <Image position="-200 140 45" rotation="180 180 0" width="100" height="133" image="%s" id="forestPreview" />
+                <Image position="200 -140 45" width="100" height="133" image="%s" id="plainsPreview" />
+                <Image position="100 -140 45" width="100" height="133" image="%s" id="islandPreview" />
+                <Image position="0 -140 45" width="100" height="133" image="%s" id="swampPreview" />
+                <Image position="-100 -140 45" width="100" height="133" image="%s" id="mountainPreview" />
+                <Image position="-200 -140 45" width="100" height="133" image="%s" id="forestPreview" />
             </Panel>
 
-            <Panel id="config" active="false" width="300" height="70" offsetXY="0 150" rotation="180 180 0" color="#FFFFFF" outline="#666666" outlineSize="2 -2">
+            <Panel id="config" active="false" width="300" height="70" offsetXY="0 -150" color="#FFFFFF" outline="#666666" outlineSize="2 -2">
                 <Row color="#999999" width="300">
                     <Text id="WindowTitle" text="Config Options" fontSize="18" fontStyle="Bold" color="#000000" rectAlignment="UpperCenter" alignment="LowerCenter" width="230" height="80" offsetXY="0 55" />
                 </Row>
-                <TableLayout width="300" height="40" columnWidths="100 200" rectAlignment="UpperMiddle" offsetXY="0 -15" border="0" cellPadding="2" color="#FFFFFF">
+                <TableLayout width="300" height="40" columnWidths="100 200" rectAlignment="UpperMiddle" offsetXY="0 -15" cellPadding="2" color="#FFFFFF">
                     <Row preferredHeight="40">
                         <Cell>
                             <Text text="Group Lands:"/>
@@ -1209,24 +1223,24 @@ function getSelectionXml()
             </Panel>
 
             <Panel id="selection" active="false">
-                <Button position="-340 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="plains" onClick="showLandSelectUI(plains)" />
-                <Button position="-660 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="island" onClick="showLandSelectUI(island)" />
-                <Button position="-980 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="swamp" onClick="showLandSelectUI(swamp)" />
-                <Button position="-1300 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="mountain" onClick="showLandSelectUI(mountain)" />
-                <Button position="-1620 0 45" rotation="180 180 0" width="300" height="390" image="%s" id="forest" onClick="showLandSelectUI(forest)" />
+                <Button position="340 0 45" width="300" height="390" image="%s" id="plains" onClick="showLandSelectUI(plains)" />
+                <Button position="660 0 45" width="300" height="390" image="%s" id="island" onClick="showLandSelectUI(island)" />
+                <Button position="980 0 45" width="300" height="390" image="%s" id="swamp" onClick="showLandSelectUI(swamp)" />
+                <Button position="1300 0 45" width="300" height="390" image="%s" id="mountain" onClick="showLandSelectUI(mountain)" />
+                <Button position="1620 0 45" width="300" height="390" image="%s" id="forest" onClick="showLandSelectUI(forest)" />
                 <Panel id="groupedLandsTexts">
-                    <Text position="-340 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
-                    <Text position="-660 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
-                    <Text position="-980 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
-                    <Text position="-1300 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
-                    <Text position="-1620 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Land</Text>
+                    <Text position="340 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
+                    <Text position="660 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
+                    <Text position="980 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
+                    <Text position="1300 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
+                    <Text position="1620 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
                 </Panel>
                 <Panel id="ungroupedLandsTexts" active="false">
-                    <Text position="-340 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Plains</Text>
-                    <Text position="-660 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Island</Text>
-                    <Text position="-980 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Swamp</Text>
-                    <Text position="-1300 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Mountain</Text>
-                    <Text position="-1620 210 45" rotation="180 180 0" width="300" height="100" color="white" fontSize="24">Select Forest</Text>
+                    <Text position="340 -210 45" width="300" height="100" color="white" fontSize="24">Select Plains</Text>
+                    <Text position="660 -210 45" width="300" height="100" color="white" fontSize="24">Select Island</Text>
+                    <Text position="980 -210 45" width="300" height="100" color="white" fontSize="24">Select Swamp</Text>
+                    <Text position="1300 -210 45" width="300" height="100" color="white" fontSize="24">Select Mountain</Text>
+                    <Text position="1620 -210 45" width="300" height="100" color="white" fontSize="24">Select Forest</Text>
                 </Panel>
             </Panel>
         ]],
