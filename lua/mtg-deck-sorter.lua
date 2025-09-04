@@ -74,19 +74,17 @@ function onObjectEnterContainer(container, object)
         return
     end
 
-    local deckData = object.getData()
-
-    table.sort(deckData.ContainedObjects, function(a, b)
+    table.sort(data.ContainedObjects, function(a, b)
         return compareCards(a, b, selections.sortBy)
     end)
 
-    deckData.DeckIDs = {}
-    for _, card in ipairs(deckData.ContainedObjects) do
-        table.insert(deckData.DeckIDs, card.CardID)
+    data.DeckIDs = {}
+    for _, card in ipairs(data.ContainedObjects) do
+        table.insert(data.DeckIDs, card.CardID)
     end
 
     local outputDeck = spawnObjectData({
-        data = deckData,
+        data = data,
         position = self.getPosition(),
         rotation = self.getRotation() + Vector(0, 180, 0),
     })
