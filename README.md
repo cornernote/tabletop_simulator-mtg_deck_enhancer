@@ -1,5 +1,7 @@
 # Ultimate MTG Deck Enhancement Tool
 
+![Thumbnail](./workshop/thumbnail.jpg)
+
 Add a touch of flair and immersion to your MTG games with this all-in-one mod bundle!  
 Transform your deck with card sleeves from MTG Arena and full-art land cards—instantly upgrading your game with rich, authentic visuals.
 
