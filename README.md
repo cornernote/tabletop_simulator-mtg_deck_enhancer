@@ -47,5 +47,6 @@ A big **thank you** for the amazing art and tools – without these contribution
 ## 📚 Resources
 
 - [Assets and a copy of the savegame on GitHub](https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer)
+- [Game on Tabletop Simulator Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3558079503)
 
 ---
