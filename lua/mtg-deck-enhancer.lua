@@ -1333,6 +1333,12 @@ function onLoad(save_state)
         end
     end
 
+    self.clearContextMenu()
+    self.addContextMenuItem("Reset Selections", function()
+        self.script_state = ""
+        self.reload()
+    end)
+
     createLabelButton()
 end
 
