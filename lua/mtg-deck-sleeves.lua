@@ -4,10 +4,10 @@
 -- Most recent script can be found on GitHub:
 -- https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer/blob/main/lua/mtg-deck-sleeves.lua
 
+local containedDeckData = null
 local defaults = {
     sleeve = "https://steamusercontent-a.akamaihd.net/ugc/1869555872447018243/605ECC61FD27EE474845AA7CC2AAC1AB2984DECB/",
 }
-
 local selections = defaults
 
 local sleeveImages = {
@@ -145,16 +145,11 @@ local show = {
 }
 
 function onSave()
-    return JSON.encode({ mtgDeckSleeves = selections })
+    return JSON.encode(selections)
 end
 
 function onLoad(save_state)
-    if save_state ~= "" then
-        jsonState = JSON.decode(save_state)
-        if jsonState and jsonState.mtgDeckSleeves then
-            selections = jsonState.mtgDeckSleeves
-        end
-    end
+    selections = JSON.decode(save_state) or defaults
 
     self.UI.setXml(getSleeveSelectXml() .. getSelectionXml())
 
@@ -172,60 +167,55 @@ function onLoad(save_state)
     })
 end
 
-function onObjectEnterContainer(container, object)
-    if container ~= self then
-        return
+function tryObjectEnter(object)
+    if containedDeckData then
+        return false
     end
 
     local data = object.getData()
 
     if data.Name ~= "Card" and data.Name ~= "CardCustom" and data.Name ~= "Deck" and data.Name ~= "DeckCustom" then
-        print("WARNING: Expected Deck or Card to be dropped, instead got " .. tostring(data.Name) .. ". Ejecting object!")
-        emptyContainer(container, false)
+        return false
+    end
 
+    return true
+end
+
+function onObjectEnterContainer(container, object)
+    if container ~= self then
         return
     end
 
-    updateDeckData(data)
+    containedDeckData = object.getData()
 
-    local outputDeck = spawnObjectData({
-        data = data,
-        position = self.getPosition(),
+    updateDeckLandCards(containedDeckData)
+
+    spawnObjectData({
+        data = containedDeckData,
+        position = self.getPosition() + Vector(0, 4, 0),
         rotation = self.getRotation() + Vector(0, 180, 180),
+        callback_function = function(deck)
+            deck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
+        end
     })
 
-    outputDeck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
-
-    emptyContainer(container, true)
+    local oldDeck = container.takeObject()
+    Wait.condition(function()
+        oldDeck.destroy()
+    end, function()
+        return oldDeck ~= null
+    end)
 end
 
-function emptyContainer(container, destroy, pos, rot)
-    local count = container.getQuantity()
-    local basePos = pos or container.getPosition() + Vector(0, 4, -4)
-    local baseRot = rot or container.getRotation() + Vector(180, 180, 180)
-
-    for _ = 1, count do
-        local obj = container.takeObject({
-            position = basePos,
-            rotation = baseRot,
-            smooth = true,
-        })
-
-        Wait.frames(function()
-            if obj then
-                local size = obj.getBoundsNormalized().size
-                local adjustedPos = basePos + Vector(0, 0, -size.z / 2)
-                obj.setPositionSmooth(adjustedPos, false, true)
-            end
-
-            if destroy and obj then
-                obj.destroy()
-            end
-        end, 1)
+function onObjectLeaveContainer(container, object)
+    if container ~= self then
+        return
     end
+
+    containedDeckData = null
 end
 
-function updateDeckData(data)
+function updateDeckLandCards(data)
     if data.Name == "Card" or data.Name == "CardCustom" then
         updateCustomDeckBackURL(data)
     elseif data.Name == "Deck" or data.Name == "DeckCustom" then

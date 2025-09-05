@@ -4,9 +4,11 @@
 -- Most recent script can be found on GitHub:
 -- https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer/blob/main/lua/mtg-deck-sorter.lua
 
-local selections = {
+local containedDeckData = null
+local defaults = {
     sortBy = "name",
 }
+local selections = defaults
 
 local sortByOptions = {
     "name",
@@ -19,32 +21,15 @@ local sortByOptions = {
 local configOpen = false
 
 function onSave()
-    return JSON.encode({ mtgDeckSorter = selections })
+    return JSON.encode(selections)
 end
 
 function onLoad(save_state)
-    if save_state ~= "" then
-        jsonState = JSON.decode(save_state)
-        if jsonState and jsonState.mtgDeckSorter then
-            selections = jsonState.mtgDeckSorter
-        end
-    end
+    selections = JSON.decode(save_state) or defaults
 
     self.UI.setXml(getConfigXml())
 
-    if selections.sortBy then
-        local index = 1
-        for i, v in ipairs(sortByOptions) do
-            if v == selections.sortBy then
-                index = i
-                break
-            end
-        end
-
-        Wait.frames(function()
-            self.UI.setAttribute("sortBy", "value", index - 1) -- UI is 0 indexed
-        end, 20)
-    end
+    setSortByFromSelection()
 
     self.createButton({
         click_function = "null",
@@ -60,38 +45,59 @@ function onLoad(save_state)
     })
 end
 
-function onObjectEnterContainer(container, object)
-    if container ~= self then
-        return
+function tryObjectEnter(object)
+    if containedDeckData then
+        return false
     end
 
     local data = object.getData()
 
     if data.Name ~= "Deck" and data.Name ~= "DeckCustom" then
-        broadcastToAll("WARNING: Expected Deck to be dropped, instead got " .. tostring(data.Name) .. ". Ejecting object!")
-        emptyContainer(container, false)
+        return false
+    end
 
+    return true
+end
+
+function onObjectEnterContainer(container, object)
+    if container ~= self then
         return
     end
 
-    table.sort(data.ContainedObjects, function(a, b)
+    containedDeckData = object.getData()
+
+    table.sort(containedDeckData.ContainedObjects, function(a, b)
         return compareCards(a, b, selections.sortBy)
     end)
 
-    data.DeckIDs = {}
-    for _, card in ipairs(data.ContainedObjects) do
-        table.insert(data.DeckIDs, card.CardID)
+    containedDeckData.DeckIDs = {}
+    for _, card in ipairs(containedDeckData.ContainedObjects) do
+        table.insert(containedDeckData.DeckIDs, card.CardID)
     end
 
-    local outputDeck = spawnObjectData({
-        data = data,
-        position = self.getPosition(),
+    spawnObjectData({
+        data = containedDeckData,
+        position = self.getPosition() + Vector(0, 4, 0),
         rotation = self.getRotation() + Vector(0, 180, 0),
+        callback_function = function(deck)
+            deck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
+        end
     })
 
-    outputDeck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
+    local oldDeck = container.takeObject()
+    Wait.condition(function()
+        oldDeck.destroy()
+    end, function()
+        return oldDeck ~= null
+    end)
+end
 
-    emptyContainer(container, true)
+function onObjectLeaveContainer(container, object)
+    if container ~= self then
+        return
+    end
+
+    containedDeckData = null
 end
 
 function compareCards(a, b, sortBy)
@@ -104,7 +110,7 @@ function compareCards(a, b, sortBy)
         if field == "name" then
             return card.Nickname or ""
         elseif field == "cmc" then
-            return getCmc(card.Nickname or 0)
+            return getCmc(card.Nickname or "")
         elseif field == "type" then
             return getType(card.Nickname or "")
         end
@@ -119,8 +125,6 @@ function compareCards(a, b, sortBy)
             return va < vb
         end
     end
-
-    return false -- equal
 end
 
 function emptyContainer(container, destroy, pos, rot)
@@ -207,10 +211,24 @@ end
 function toggleSortBy(player, index)
     index = tonumber(index) + 1
     if sortByOptions[index] then
-        --self.UI.setAttribute("sortBy", "value", index)
         selections.sortBy = sortByOptions[index] or "name"
     else
-        --self.UI.setAttribute("sortBy", "value", 1)
         selections.sortBy = "name"
+    end
+end
+
+function setSortByFromSelection()
+    if selections.sortBy then
+        local index = 1
+        for i, v in ipairs(sortByOptions) do
+            if v == selections.sortBy then
+                index = i
+                break
+            end
+        end
+
+        Wait.frames(function()
+            self.UI.setAttribute("sortBy", "value", index - 1) -- UI is 0 indexed
+        end, 20)
     end
 end
