@@ -1541,7 +1541,7 @@ function collapseDeck(cards)
     local uniqueCards = {}
 
     for _, card in ipairs(cards or {}) do
-        local key = card.CardID or card.Nickname
+        local key = card.Nickname
         if not uniqueCards[key] then
             card.Quantity = 1
             uniqueCards[key] = card
