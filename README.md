@@ -11,7 +11,7 @@ Transform your deck with card sleeves from MTG Arena and full-art land cards—i
 
 - **Sleeve Changer** – Bring custom sleeves into your own decks.
 - **Land Swapper** – With 600+ full-art lands, show off your deck with gorgeous lands from every major MTG expansion.
-- **Deck Sorter** - Multiple sorting options and lightning fast to sort even the largest decks
+- **Deck Sorter** - View the deck while selecting sorting options.
 ---
 
 ## 🎮 Features

@@ -6,8 +6,8 @@ Add a touch of flair and immersion to your MTG games with this all-in-one mod bu
 
 [list]
 [*][b]Sleeve Changer[/b] - Bring custom sleeves from into your own decks.
-[*][b]Land Swapper[/b] - With 600+ Full-Art lands, show off your deck with gorgeous lands from every major MTG expansion
-[*][b]Deck Sorter[/b] - Multiple sorting options and lightning fast to sort even the largest decks
+[*][b]Land Swapper[/b] - With 600+ Full-Art lands, show off your deck with gorgeous lands from every major MTG expansion.
+[*][b]Deck Sorter[/b] - View the deck while selecting sorting options.
 [/list]
 
 [h2]=== FEATURES ===[/h2]

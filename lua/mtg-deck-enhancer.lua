@@ -1,30 +1,28 @@
--- ULTIMATE MTG Deck Land Swapper by CoRNeRNoTe
--- Swap basic lands for full-art lands.
+-- ULTIMATE MTG Deck Enhancer by CoRNeRNoTe
 
 -- Most recent script can be found on GitHub:
--- https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer/blob/main/lua/mtg-deck-lands.lua
+-- https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer/blob/main/lua/mtg-deck-enhancer.lua
 
 local containedDeckData = null
-local uiLoaded = false
-local urlPrefix = "https://cards.scryfall.io/"
-
 local defaults = {
-    plains = "/front/4/0/4069fb4a-8ee1-41ef-ab93-39a8cc58e0e5.jpg",
-    island = "/front/a/2/a2e22347-f0cb-4cfd-88a3-4f46a16e4946.jpg",
-    swamp = "/front/f/0/f0b234d8-d6bb-48ec-8a4d-d8a570a69c62.jpg",
-    mountain = "/front/c/4/c44f81ca-f72f-445c-8901-3a894a2a47f9.jpg",
-    forest = "/front/a/3/a305e44f-4253-4754-b83f-1e34103d77b0.jpg",
-    groupLands = true
+    sortBy = null,
+    sleeve = null,
+    plains = null,
+    island = null,
+    swamp = null,
+    mountain = null,
+    forest = null,
 }
 local selections = defaults
 
+local landUrlPrefix = "https://cards.scryfall.io/"
 local landImages = {
-    default = {
-        plains = defaults.plains,
-        island = defaults.island,
-        swamp = defaults.swamp,
-        mountain = defaults.mountain,
-        forest = defaults.forest,
+    standard = {
+        plains = "/front/4/0/4069fb4a-8ee1-41ef-ab93-39a8cc58e0e5.jpg",
+        island = "/front/a/2/a2e22347-f0cb-4cfd-88a3-4f46a16e4946.jpg",
+        swamp = "/front/f/0/f0b234d8-d6bb-48ec-8a4d-d8a570a69c62.jpg",
+        mountain = "/front/c/4/c44f81ca-f72f-445c-8901-3a894a2a47f9.jpg",
+        forest = "/front/a/3/a305e44f-4253-4754-b83f-1e34103d77b0.jpg",
     },
     SPM = {
         plains = "/front/1/1/1164f7ec-7b2f-4cc9-90bb-7eaaa331b4cd.jpg",
@@ -537,12 +535,6 @@ local landImages = {
         mountain = "/front/9/6/96549393-9607-43c8-91de-905462cbcb19.jpg", -- 362
         forest = "/front/e/7/e7f57347-7206-4a2f-a41b-0612d456cd30.jpg", -- 363
     },
-    --SLD6 = {
-    --},
-    --SLD7 = {
-    --},
-    --SLD8 = {
-    --},
     SLD9 = {
         plains = "/front/c/7/c71446bd-08f2-41fe-ae44-db44814c8afb.jpg", -- 415
         island = "/front/b/d/bd081bbf-8e82-405c-a522-f826fa0a6e1d.jpg", -- 416
@@ -557,8 +549,6 @@ local landImages = {
         mountain = "/front/5/2/52248fe8-0f1b-4e3d-9024-842c921b6071.jpg", -- 451
         forest = "/front/a/9/a940a241-4efd-42f7-a670-2c4fed4755bb.jpg", -- 452
     },
-    --SLD11 = {
-    --},
     SLD12 = {
         plains = "/front/f/8/f8dca86c-4dd3-4016-bab1-dd259b68b66c.jpg", -- 888
         swamp = "/front/5/b/5b643680-4e28-4ae2-b4d6-609d2150a171.jpg", -- 890
@@ -921,15 +911,413 @@ local landImages = {
     },
 }
 
-local configOpen = false
+local standardSleeve = "https://steamusercontent-a.akamaihd.net/ugc/1869555872447018243/605ECC61FD27EE474845AA7CC2AAC1AB2984DECB/"
+local sleeveImages = {
+    standardSleeve,
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447018942/88356A1F95A65CBEBAED0883F2504E4B4E65796C/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447074635/B8AE1DBE33909FFE6082C7DA1B5DBF7EEFD44109/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422032417702/6A2506A9E59002C46DF567714B3C2D4F79BEAB7A/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447056386/97F82F8C9BD4F8B239B7A22A3D080945A47EF0B1/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447056012/CF3DEB9A3ADA16F239632A788126DCE6E99E780E/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036970677/1BB5838C618EF510753A04298C84199AD8A309F4/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447078558/3F7E7B8EE826F758EBDD66490A17442E9619A20D/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447058073/E02D8C9472BEC664E6363F1687658E12516400FF/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447082566/411AA96D4CE0DD6424A3E45AC8FCAD396DF190B8/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422032369915/19711E0A3F109521C8D4174D40CD7BBDEF7A1276/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447022921/56A799BD5B912A6A793E3F8D5383B5FE47C81DBC/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036969876/056DC660B759FA36403C0DE93D9C0604AEC0337F/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036970322/7971AE24E3ACAB182A336AF063B8F3A7DA461ECB/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422032418452/26BC5F00CBB8A0283436FA6484A32B95D84615CB/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036968978/4ADFC95BA092652EB9E00F31D342E321292B25D6/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036978303/9A5BB30B0E323A7CF63FC64F8185A565CE62B9BE/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036978597/FF92098A4177556776C0ED225C71AA2E0F099DF2/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036976791/520DB4D118731902CA3D6C1A74DCC3FC28CB31F6/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036975818/C4C55DBF0A7D108FEC4B85390901A2563232F81A/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447033873/7021019ECB878A3768C60E642AF748BD5D2395A6/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447033360/C3E8EF6F55C8CB0C8C807213EBD001650617E3A1/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447032986/A8DFE2FD3CEA7FB05C89436B90C1589AC4A8FCDE/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447032607/1023C44D87DFC77A916F8925279B2F0B8FDBFCDE/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447031225/06E60BFCF7E19AD2D2CD4C101AF09C9E18809BB0/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036971101/2AC4E7C706E7D8204BD3066EA8E36747A06D9FD9/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036971490/86B8455B027F7C6EDA73726AB1E9A96FEB13FC59/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036971907/A84BFBC49C8329671E0654AD56BF07A748F61C04/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036972345/C9815619FC57AFF7E23D5E0F27D04F523AE6F3A1/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036973196/6051334480E7522B2A322DC77BCAE0583FE3CF13/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036973568/D0C83CB30907BFAE5AF539C2F47FC943AB75C7F6/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036974047/F77494B6BFBA686201FCC4F71BDCBBB9EB91AF4A/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036974550/72CAF6A947CA397CE12AF38FBDE9F8AF6D9E98EB/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036974983/90B0250A303D6F02BE0984CD87043F7900CDA230/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036975414/9B898AD727B52CAA1783BE28F62F432970BC18CC/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447030509/9FBBD8F84856735E2545DB3C14D61FECB4BFE641/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422036977939/58668A20AED602AC08932DF529B97C91971CC32E/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447021949/558C18CA44566497FE4CED8B2391A39A2B68B44D/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447021515/A965B6DC5739EBB06282E1F2134D530F62ABD13C/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872444408252/54BE3E4EBD7DD8DC45E853F141D94E07A22FB640/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872444405789/6F3EE53C9B3845827CB91D7849993AEAE1147E08/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872444406229/31845016ABBF25575230C12A763A5B9E93E9ED5E/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872444407047/9CAD6EE85A85DD4FBB4590CCC6A9E5B5A92CC282/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872444407548/F5B77F8E33D38742488B934E78F148419FF976D8/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872444407958/B1CC27296B183CE3AF34D46CDEB39184D7F68FD3/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447061848/04595EF1316C03AD1A54EE8FE53135448121E3ED/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447061370/C4ABDF1DA94C79AB905EFF913DA96557B8B67C99/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447060676/82B35561304B523A386FADDEBAA5DC4F44572392/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447059902/5D7E476FECFE1C6BE0BDB5EFB2FD1059A1D3CA7B/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447059500/789D746D42F80E48FD696AF79A192E6742E96BE0/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447042631/44715368A9B83C8EF4CE0123551DA932B073F017/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447043066/6D44D16315D7D4794808FDDD0C17C9D76EE2F82C/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447043407/06F855001AA6729A18AF367962C4E98C2ED97202/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447043787/5EA0F048FCB33D4F003D94BE25D7B843705402D1/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447044257/41BEB059BB5AAF6E15ABCC47ED29D00DB1CAD4AF/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447044788/69D9F8F61F1B571F1C4E3F0D737AE9E18779A24A/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447054127/EAD3B7CF2D2B0FD6030302D1FE3B7633A9EE2650/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447045627/681633A3A91DAC9321BC55E1C7C04EEC1FEAD9A8/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447045947/A39C2F72808C18A0E29B1701C575B792F9F627AA/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447046319/B2B0887D7E5A4FD6988DEA1850F465EBF0D447CE/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447045178/0E88949A205E55C8E973A4E9E6A7F6F14788CD5D/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447052906/C8F281E3D0177B99778F59C81A05578BD54E7340/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447052435/8D7D6669B726869C19E27ADE4E13B23CD93A71E6/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447051913/F67885E7A3C18CA5E479A0E5856C126AEA67DFB7/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447053317/41E806324ADDF9A28CB2DB8880E94325311D93CF/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447051448/38B57DF43EFA874D5F2283C8E8E05AFF1D2E3ED7/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447053748/CEB76766CE81A18F1E798FC5D40B7101D16C63C7/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447050834/39E06E352ECA7962629FFDAD315772A1CBAE4F9F/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447046781/0F715797C5DEB36A6DE7356787373704649ADC11/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447050361/2327F1F5077A206DA8A8A938DDFD7A76E3C1CFDF/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447054599/BF6FB3450B0958B10E6EE61E7D39CBA6BB7A998B/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447055615/E04AC568DDC125299454E6F7CE89A122036CBA97/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447020311/7831A0D35D6A5D5270D2BDA699CEB445088D88A2/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447020870/3E4A707588DCC085907BCC25392088F8117A6151/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447056787/173534F57D4D13B578F06413FEB4C080349D0E89/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447073914/E5E0F3847134A51403941E9D100DD0A0682623B6/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447073459/710AC301F4F1DA719C61FB0779859CFD4A9EF091/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447064780/EBDE9CD79ED4D813675444513C5C69AB8C94C941/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447065252/E1BBB0A83DF41A8D1204FBECE8C806CEAB669F2B/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447065750/3F8A009FDD6482338A1BBBBDDE92CF904F9C2BB0/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447066856/1CC0CBBEA482FEA7CB3822BFE430292DAD0326A5/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447066370/C6EC42C900325C74E644999E2295318717B4A76E/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447067812/B0BFEE6936BF475C033D9C737A848140D5CF689A/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447067369/8FCAB2DFA34742AD3ED5DEC034128E4EB64E2931/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447068299/498D5B6651868F51274192CF732E4C673BFE7F3A/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447064162/AB2F26B906670B00A8320001CAB95050AA2D473F/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447063688/D2D30EB5DB89B18ED6EFAF5DF2BBBD95592A2767/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447063219/DFA646B98B6ADB319ADF32BF6CDBB6ED55B91458/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447062858/6D734EC87C08C23709ED22370C82D187F1CEBE54/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447062295/DEBE9A5D242719DDBFA8F84532D99AD47A2B464E/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447041519/6D253E7B3EA52BFE4CAF7843C6901F9AED6FDAB3/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447041099/3D283BBDF7FD721CADE879929216F1E467D674E7/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447039473/329CBB8869EE2050B0D4C0C067B8327EE0D18450/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447040369/EAFC8C917CA2E97FF7F4D8FCC261CB72DBAFD949/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447039965/A60290FC5496C62EC9A7DD724343B66B4FE48411/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447059145/225C0452E4C7AF600EEE8E015B0D67890F9CD49A/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422032393541/BA2D0E76692C8028AC73DFCBC2A4542A5A2CCC1B/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555422032392399/CA1BC8FC5A3A44D376BBD0ED421D8BB70DA4E187/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447057636/E00B15E115FF80C80489D86601E742CA8945879D/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447057192/FA582811FBE626F33BBFB4171D5FBF048F3F08E9/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447069736/5F22FECE7F3FA34A3822BD50C9F3EF44369B4144/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447070194/F6062831D69B5CEB5FBD16B6D566B36E5A545300/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447070658/AA04FFE9DA1EBD9F4DFF619F8E8A0E1FA53F7010/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447071247/434C3E3AFC447DC3430E3361A23ADE125E2D1B73/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447071740/4FABCF1640DE71F4D7BD57A689B333118F1FBC18/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447072210/C429E2DC5264DAEAB5F87059D3A5B08B467E5EC9/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447072593/DC877BCF2399E3A6C6B3A6ADA7D6761664061652/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447073041/1A713A3E53A4075C258EB01E023102F14C880B85/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447069246/DD618E6EB7610F334AA7CD4F606058586048DA5F/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447068778/6D3F6A4E2F11760CFCC3FD1AAA8A64618C4D722E/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447025356/6C5230C2BC1D007063E3A692F98E6FE0ED973FEA/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447025894/6F15188C2893D0DC510337087947658375CEFA27/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447097534/BC1968DCD8798F4841CBE8C1BD4CA4261E3E4B12/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447098375/1BEEEAA9FBC7975C78F61AAB6E183C067A2EC9FF/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447099182/80D3DCB710F0C6BADB92BDBA803D23BD929C8B49/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447087349/17FF73A790FBACF30E9D41232376CD84B8942F07/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447086464/B2C7244E62467A0BAABADE1414A13356D3603C0F/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447087832/7E428167F53A8BD5FB420082F86A062F0EFF5EEF/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447086907/34551EEA373CDAF547834426ED026D63DF19C2D5/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447085639/E29409F3DB430DDCA816186A39403DBF8AE657F6/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447090769/3F24675F832F738711E9D91BEC157F6B539FCA54/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447091401/CADF7EE2DE3D44305CE042032769BE23599C9416/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447092649/5D53A845E4C95853472DFBEDAFF88627B8B24B2C/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447094271/61794AD46ED311761FC67901C6A37FFE7E8EDD42/",
+    "https://steamusercontent-a.akamaihd.net/ugc/1869555872447095841/8C84315F66A9FC5ABC12B83F51DF71D387D77842/",
+}
 
-local show = {
-    landSelect = false,
-    plainsSelect = false,
-    islandSelect = false,
-    swampSelect = false,
-    mountainSelect = false,
-    forestSelect = false,
+local sortByOptions = {
+    name = "Name",
+    cmc_name = "CMC + Name",
+    type_name = "Type + Name",
+    type_cmc_name = "Type + CMC + Name",
+    cmc_type_name = "CMC + Type + Name",
+}
+local activeTool = null
+local tools = {}
+tools.landSwapper = {
+    label = "Land Swapper",
+    getSummaryXml = function()
+        local xml = ""
+        local lands = { "plains", "island", "swamp", "mountain", "forest" }
+        local anySelected = false
+        for _, land in ipairs(lands) do
+            if selections[land] then
+                anySelected = true
+                break
+            end
+        end
+
+        if anySelected then
+            for _, land in ipairs(lands) do
+                if selections[land] then
+                    xml = xml .. string.format([[
+                        <Panel>
+                            <Button width="80" height="111" image="%s" id="%sPreview" />
+                        </Panel>
+                    ]], landUrlPrefix .. "small" .. selections[land], land)
+                end
+            end
+        else
+            xml = xml .. [[
+                <Text fontSize="40" color="#000000EE" text="no land change" />
+            ]]
+        end
+        return string.format([[
+                <HorizontalLayout>
+                    %s
+                </HorizontalLayout>
+        ]], xml)
+    end,
+    getToolXml = function()
+        local cols = 20
+        local buttonWidth = 75
+        local buttonHeight = 100
+        local xml = ""
+        local index = 0
+
+        for groupName, lands in pairs(landImages) do
+            for landType, image in pairs(lands) do
+                local col = index % cols
+                local row = math.floor(index / cols)
+
+                if col == 0 and row > 0 then
+                    xml = xml .. [[</Row><Row preferredHeight="100">]]
+                end
+
+                xml = xml .. string.format([[
+                        <Cell>
+                            <Button width="%d" height="%d" image="%s" onClick="onLandClicked%s(%s)" />
+                        </Cell>
+                    ]],
+                        buttonWidth, buttonHeight, landUrlPrefix .. "small" .. image, landType:gsub("^%l", string.upper), image
+                )
+
+                index = index + 1
+            end
+        end
+
+        local images = JSON.decode(JSON.encode(landImages.standard))
+        for land, _ in pairs(images) do
+            if selections[land] then
+                images[land] = selections[land]
+            end
+        end
+
+        return string.format([[
+            <Panel offsetXY="710 -270" width="1520">
+                <ToggleGroup allowSwitchOff="true" height="400">
+                    <HorizontalLayout spacing="25">
+                        <Button width="300" height="390" image="%s" id="plains" onClick="onLandClickedPlains(%s)" />
+                        <Button width="300" height="390" image="%s" id="island" onClick="onLandClickedIsland(%s)" />
+                        <Button width="300" height="390" image="%s" id="swamp" onClick="onLandClickedSwamp(%s)" />
+                        <Button width="300" height="390" image="%s" id="mountain" onClick="onLandClickedMountain(%s)" />
+                        <Button width="300" height="390" image="%s" id="forest" onClick="onLandClickedForest(%s)" />
+                    </HorizontalLayout>
+                </ToggleGroup>
+                <VerticalScrollView offsetXY="0 -620" width="1520" height="800" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
+                    <TableLayout width="1500" height="%d">
+                        <Row preferredHeight="%d">]] .. xml .. [[</Row>
+                    </TableLayout>
+                </VerticalScrollView>
+            </Panel>
+            ]],
+                landUrlPrefix .. "large" .. images.plains, images.plains,
+                landUrlPrefix .. "large" .. images.island, images.island,
+                landUrlPrefix .. "large" .. images.swamp, images.swamp,
+                landUrlPrefix .. "large" .. images.mountain, images.mountain,
+                landUrlPrefix .. "large" .. images.forest, images.forest,
+                (math.floor(index / cols) + 1) * buttonHeight,
+                buttonHeight)
+    end,
+}
+tools.sleeveChanger = {
+    label = "Sleeve Changer",
+    getSummaryXml = function()
+        local xml = ""
+        if selections.sleeve then
+            xml = xml .. string.format([[
+                <Button width="80" height="111" image="%s" id="sleevePreview" />
+            ]], selections.sleeve)
+        else
+            xml = xml .. [[ <Text fontSize="40" color="#000000EE" text="no sleeve change" /> ]]
+        end
+        return xml
+    end,
+    getToolXml = function()
+        local cols = 15
+        local rows = 9
+        local buttonWidth = 75
+        local buttonHeight = 100
+
+        local xml = ""
+        local id = 1
+
+        for row = 0, rows - 1 do
+            for col = 0, cols - 1 do
+                local image = sleeveImages[id]
+
+                if image then
+                    if col == 0 and row > 0 then
+                        xml = xml .. [[</Row><Row preferredHeight="100">]]
+                    end
+
+                    xml = xml .. string.format([[
+                            <Cell>
+                                <Button width="%d" height="%d" image="%s" onClick="onSleeveClicked(%s)" />
+                            </Cell>
+                        ]],
+                            buttonWidth, buttonHeight, image, image
+                    )
+                end
+
+                id = id + 1
+            end
+        end
+
+        local width = cols * buttonWidth
+        local height = (math.floor(id / cols)) * buttonHeight + 100
+        local sleeve = selections.sleeve
+        if not sleeve then
+            sleeve = standardSleeve
+        end
+
+        return string.format([[
+                <Button offsetXY="1280 -270" width="300" height="390" image="%s" id="sleeve" onClick="onSleeveClicked(%s)" />
+                <VerticalScrollView width="%d" height="1000" offsetXY="520 -570" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
+                    <TableLayout width="%d" height="%d">
+                        <Row preferredHeight="100">
+                            <InputField id="sleeveInput" width="%d" height="80" fontSize="50" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput()" />
+                        </Row>
+                        <Row preferredHeight="%d">]] .. xml .. [[</Row>
+                    </TableLayout>
+                </VerticalScrollView>
+            ]],
+                sleeve, sleeve, width + 20, width, height, width - 20, buttonHeight)
+    end,
+}
+tools.deckSorter = {
+    label = "Deck Sorter",
+    getSummaryXml = function()
+        if selections.sortBy then
+            return string.format([[
+                    <VerticalLayout>
+                        <Text fontSize="30" color="#111111EE" text="Sort By" />
+                        <Text fontSize="40" fontStyle="Bold" color="#000000EE" text="%s" />
+                    </VerticalLayout>
+                ]], sortByOptions[selections.sortBy] or selections.sortBy)
+        end
+        return [[
+                <Text fontSize="40" color="#000000EE" text="no sorting" />
+            ]]
+    end,
+    getToolXml = function()
+        local buttonWidth = 30
+        local buttonHeight = 45
+
+        local cardsInContainerDeck = collapseDeck(containedDeckData.ContainedObjects)
+
+        local function getSortBarXml()
+            local sortBarXml = {}
+            for sortById, sortBy in pairs(sortByOptions) do
+                local isOn = (sortById == selections.sortBy) and 'isOn="true"' or ''
+                table.insert(sortBarXml, string.format([[<ToggleButton fontSize="20" fontStyle="Bold" onValueChanged="onSelectSortBy(%s)" text="%s" %s />]], sortById, sortBy, isOn))
+            end
+
+            return [[
+            <Panel offsetXY="710 -120" width="1520" height="80">
+                <ToggleGroup allowSwitchOff="true">
+                    <HorizontalLayout spacing="25">
+                        ]] .. table.concat(sortBarXml, "\n") .. [[
+                    </HorizontalLayout>
+                </ToggleGroup>
+            </Panel>
+        ]]
+        end
+
+        local function getCardXml(card)
+            return string.format([[
+            <Row preferredHeight="%d">
+                <Cell>
+                    <Image width="%d" height="%d" image="%s"/>
+                </Cell>
+                <Cell>
+                    <Text fontSize="30" alignment="UpperRight" text="%s"/>
+                </Cell>
+                <Cell>
+                    <Text fontSize="30" alignment="UpperLeft" text="%s"/>
+                </Cell>
+                <Cell>
+                    <Text fontSize="30" alignment="UpperLeft" text="%s"/>
+                </Cell>
+                <Cell>
+                    <Text fontSize="30" alignment="UpperRight" text="%s"/>
+                </Cell>
+            </Row>
+        ]],
+                    buttonHeight, buttonWidth, buttonHeight, getFirstFaceURL(card), card.Quantity, getName(card), getType(card), getCmc(card)
+            )
+        end
+
+        local function getCardsXml()
+            local xml = ""
+
+            for row = 1, #cardsInContainerDeck do
+                local card = cardsInContainerDeck[row]
+
+                if card then
+                    xml = xml .. getCardXml(card)
+                end
+            end
+
+            return xml
+        end
+
+        return string.format([[
+            %s
+            <VerticalScrollView width="1520" height="1200" offsetXY="710 -780" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
+                <TableLayout width="1500" height="%d" columnWidths="37 73 700 600 100" cellPadding="3" color="#ffffff">
+                    <Row preferredHeight="%d">
+                        <Cell>
+
+                        </Cell>
+                        <Cell>
+                            <Text fontSize="30" fontStyle="bold" text="Qty"/>
+                        </Cell>
+                        <Cell>
+                            <Text fontSize="30" fontStyle="bold" text="Name"/>
+                        </Cell>
+                        <Cell>
+                            <Text fontSize="30" fontStyle="bold" text="Type"/>
+                        </Cell>
+                        <Cell>
+                            <Text fontSize="30" fontStyle="bold" text="CMC"/>
+                        </Cell>
+                    </Row>
+                   %s
+                </TableLayout>
+            </VerticalScrollView>
+        ]],
+                getSortBarXml(),
+                #cardsInContainerDeck * buttonHeight + buttonHeight,
+                buttonHeight,
+                getCardsXml()
+        )
+    end,
 }
 
 function onSave()
@@ -937,22 +1325,15 @@ function onSave()
 end
 
 function onLoad(save_state)
-    selections = JSON.decode(save_state) or defaults
+    selections = JSON.decode(save_state) or { }
 
-    self.UI.setXml(getSelectionXml())
+    for k, v in pairs(defaults) do
+        if v and not selections[k] then
+            selections[k] = v
+        end
+    end
 
-    self.createButton({
-        click_function = "null",
-        function_owner = self,
-        label = "MTG Deck\nLands",
-        position = { 0, -0.5, 1.3 },
-        rotation = { 180, 0, 180 },
-        color = { 0.1, 0.1, 0.1, 1 },
-        font_color = { 1, 1, 1, 1 },
-        width = 0,
-        height = 0,
-        font_size = 250,
-    })
+    createLabelButton()
 end
 
 function tryObjectEnter(object)
@@ -962,7 +1343,7 @@ function tryObjectEnter(object)
 
     local data = object.getData()
 
-    if data.Name ~= "Card" and data.Name ~= "CardCustom" and data.Name ~= "Deck" and data.Name ~= "DeckCustom" then
+    if data.Name ~= "Deck" and data.Name ~= "DeckCustom" then
         return false
     end
 
@@ -974,25 +1355,12 @@ function onObjectEnterContainer(container, object)
         return
     end
 
+    playTriggerEffect()
+    self.clearButtons()
+
     containedDeckData = object.getData()
 
-    updateDeckLandCards(containedDeckData)
-
-    spawnObjectData({
-        data = containedDeckData,
-        position = self.getPosition() + Vector(0, 4, 0),
-        rotation = self.getRotation() + Vector(0, 180, 0),
-        callback_function = function(deck)
-            deck.setPositionSmooth(self.getPosition() + Vector(0, 4, -4), false, true)
-        end
-    })
-
-    local oldDeck = container.takeObject()
-    Wait.condition(function()
-        oldDeck.destroy()
-    end, function()
-        return oldDeck ~= null
-    end)
+    drawUI()
 end
 
 function onObjectLeaveContainer(container, object)
@@ -1000,357 +1368,437 @@ function onObjectLeaveContainer(container, object)
         return
     end
 
-    containedDeckData = null
-end
-
-function updateDeckData(data)
-    if data.Name == "Card" or data.Name == "CardCustom" then
-        updateCustomDeckLand(data)
-    elseif data.Name == "Deck" or data.Name == "DeckCustom" then
-        updateCustomDeckLands(data)
-    end
-end
-
-function updateCustomDeckLand(data)
-    if not data.CustomDeck then
+    if not containedDeckData then
         return
     end
 
-    local url = getLandImage(data.Nickname)
+    self.UI.setXml("")
 
-    if url then
-        for _, entry in pairs(data.CustomDeck) do
-            entry.FaceURL = url
+    replaceDeckLandCards()
+    replaceDeckSleeves()
+    sortCards()
+    playTriggerEffect()
+
+    spawnNewDeck(function()
+        containedDeckData = null
+        activeTool = null
+        drawUI()
+        createLabelButton()
+    end)
+
+    Wait.condition(function()
+        object.destroy()
+    end, function()
+        return object ~= null
+    end)
+end
+
+function getToolbarXml()
+    local toolbarXml = {}
+    for toolId, tool in pairs(tools) do
+        local isOn = (toolId == activeTool) and 'isOn="true"' or ''
+        table.insert(toolbarXml, string.format([[
+                <VerticalLayout spacing="0" childForceExpandHeight="false">
+                    <Panel preferredHeight="100">
+                        <ToggleButton fontSize="40" fontStyle="Bold" onValueChanged="onSelectTool(%s)" text="%s" %s />
+                    </Panel>
+                </VerticalLayout>
+            ]], toolId, tool.label, isOn))
+    end
+
+    return [[
+            <Panel offsetXY="770 -25" width="1400" height="150">
+                <ToggleGroup allowSwitchOff="true">
+                    <HorizontalLayout spacing="25">
+                        ]] .. table.concat(toolbarXml, "\n") .. [[
+                    </HorizontalLayout>
+                </ToggleGroup>
+            </Panel>
+        ]]
+end
+
+function getSummaryXml()
+    local summaryXml = {}
+    for _, tool in pairs(tools) do
+        table.insert(summaryXml, string.format([[
+                <VerticalLayout spacing="0" childForceExpandHeight="false" height="130">
+                    <Panel preferredHeight="130" color="#FFFFFF66">
+                        %s
+                    </Panel>
+                </VerticalLayout>
+            ]], tool.getSummaryXml() or ""))
+    end
+
+    return [[
+            <Panel offsetXY="770 -130" width="1400" height="130">
+                <HorizontalLayout spacing="25">
+                    ]] .. table.concat(summaryXml, "\n") .. [[
+                </HorizontalLayout>
+            </Panel>
+        ]]
+end
+
+function onSelectTool(player, tool)
+    if activeTool == tool then
+        activeTool = null
+    else
+        activeTool = tool
+    end
+
+    drawUI()
+end
+
+function drawUI()
+    local xml = ""
+
+    if containedDeckData then
+        xml = xml .. [[
+            <Button position="0 0 -52" width="50" height="50" image="https://steamusercontent-a.akamaihd.net/ugc/11685204108261470604/283D709CA895067E844870598EA083AB4E392F71/" onClick="ejectDeck" />
+        ]]
+        xml = xml .. getToolbarXml()
+        if tools[activeTool] then
+            if activeTool == "deckSorter" then
+                sortCards()
+            end
+
+            xml = xml .. tools[activeTool].getToolXml()
+        else
+            xml = xml .. getSummaryXml()
         end
     end
+
+    self.UI.setXml(xml)
 end
 
-function updateCustomDeckLands(data)
-    if not data.CustomDeck or not data.ContainedObjects then
+function onSelectSortBy(player, sortBy)
+    if sortBy == selections.sortBy then
+        selections.sortBy = nul
+    else
+        selections.sortBy = sortBy
+    end
+
+    drawUI()
+end
+
+function onSleeveClicked(player, sleeveImageUrl)
+    if selections.sleeve == sleeveImageUrl then
+        selections.sleeve = null
+    else
+        selections.sleeve = sleeveImageUrl
+    end
+
+    self.UI.setAttribute("sleeveInput", "text", "")
+    self.UI.setAttribute("sleeve", "image", selections.sleeve or standardSleeve)
+    self.UI.setAttribute("sleeve", "onClick", "onSleeveClicked(" .. (selections.sleeve or "") .. ")")
+end
+
+function onSleeveInput(player, landImageUri)
+    selections.sleeve = landImageUri
+    self.UI.setAttribute("sleeve", "image", landImageUri)
+end
+
+function onLandClickedPlains(player, landImageUri)
+    onLandClicked(player, "plains", landImageUri)
+end
+
+function onLandClickedIsland(player, landImageUri)
+    onLandClicked(player, "island", landImageUri)
+end
+
+function onLandClickedSwamp(player, landImageUri)
+    onLandClicked(player, "swamp", landImageUri)
+end
+
+function onLandClickedMountain(player, landImageUri)
+    onLandClicked(player, "mountain", landImageUri)
+end
+
+function onLandClickedForest(player, landImageUri)
+    onLandClicked(player, "forest", landImageUri)
+end
+
+function onLandClicked(player, landType, landImageUri)
+    if landImageUri then
+        if selections[landType] == landImageUri then
+            selections[landType] = null
+            landImageUri = landImages.standard[landType]
+        else
+            selections[landType] = landImageUri
+        end
+
+        self.UI.setAttribute(landType, "image", landUrlPrefix .. "large" .. landImageUri)
+        self.UI.setAttribute(landType, "onClick", "onLandClicked" .. landType:gsub("^%l", string.upper) .. "(" .. (selections[landType] or "") .. ")")
+    end
+end
+
+function collapseDeck(cards)
+    local uniqueCards = {}
+
+    for _, card in ipairs(cards or {}) do
+        local key = card.CardID or card.Nickname
+        if not uniqueCards[key] then
+            card.Quantity = 1
+            uniqueCards[key] = card
+        else
+            uniqueCards[key].Quantity = uniqueCards[key].Quantity + 1
+        end
+    end
+
+    local result = {}
+    for _, card in pairs(uniqueCards) do
+        table.insert(result, card)
+    end
+
+    return result
+end
+
+function sortCards()
+    if not selections.sortBy then
         return
     end
 
-    for _, card in pairs(data.ContainedObjects) do
+    table.sort(containedDeckData.ContainedObjects, function(a, b)
+        return compareCards(a, b, selections.sortBy)
+    end)
+end
 
-        local url = getLandImage(card.Nickname)
-        if url then
-            if card.CustomDeck then
-                for _, entry in pairs(card.CustomDeck) do
-                    entry.FaceURL = url
+function replaceDeckLandCards()
+    if not containedDeckData.CustomDeck then
+        return
+    end
+
+    local function getLandImage(name)
+        local landFaces = {
+            Plains = selections.plains,
+            Island = selections.island,
+            Swamp = selections.swamp,
+            Mountain = selections.mountain,
+            Forest = selections.forest,
+        }
+
+        if string.find(name, "Basic Land") then
+            for landType, url in pairs(landFaces) do
+                if url and string.find(name, landType) then
+                    return landUrlPrefix .. "large" .. url
                 end
-            else
-                card.FaceURL = url
-            end
-
-            -- find and update the entry in the deck.CustomDeck
-            local entryId = getDeckEntryId(card.CardID, data.CustomDeck)
-            if entryId then
-                data.CustomDeck[entryId].FaceURL = url
             end
         end
     end
-end
 
-function getDeckEntryId(cardId, customDeck)
-    local idStr = tostring(cardId)
-    for i = #idStr, 1, -1 do
-        local key = tonumber(idStr:sub(1, i))
-        if customDeck[key] then
-            return key
-        end
-    end
-end
-
-function getLandImage(name)
-    local landFaces = {
-        Plains = selections.plains,
-        Island = selections.island,
-        Swamp = selections.swamp,
-        Mountain = selections.mountain,
-        Forest = selections.forest,
-    }
-
-    if string.find(name, "Basic Land") then
-        for landType, url in pairs(landFaces) do
-            if string.find(name, landType) then
-                return urlPrefix .. "large" .. url
+    local function getDeckEntryId(cardId, customDeck)
+        local idStr = tostring(cardId)
+        for i = #idStr, 1, -1 do
+            local key = tonumber(idStr:sub(1, i))
+            if customDeck[key] then
+                return key
             end
         end
     end
-end
 
-function hideAllSelects(except)
-    local ids = {
-        "landSelect",
-        "plainsSelect",
-        "islandSelect",
-        "swampSelect",
-        "mountainSelect",
-        "forestSelect",
-    }
+    local function updateCard(card)
+        local url = getLandImage(card.Nickname)
+        if not url then
+            return
+        end
 
-    for _, id in ipairs(ids) do
-        if id ~= except then
-            self.UI.hide(id)
-            show[id] = false
+        if card.CustomDeck then
+            for _, entry in pairs(card.CustomDeck) do
+                entry.FaceURL = url
+            end
         else
-            self.UI.show(id)
-            show[id] = true
+            card.FaceURL = url
         end
-    end
-end
 
-function getLandSelectXml()
-    local cols = 20
-    local buttonWidth = 75
-    local buttonHeight = 100
-    local xml = ""
-    local index = 0
-
-    for groupName, lands in pairs(landImages) do
-        for landType, image in pairs(lands) do
-            local col = index % cols
-            local row = math.floor(index / cols)
-
-            if col == 0 and row > 0 then
-                xml = xml .. [[</Row><Row preferredHeight="100">]]
+        if containedDeckData.ContainedObjects then
+            local entryId = getDeckEntryId(card.CardID, containedDeckData.CustomDeck)
+            if entryId then
+                containedDeckData.CustomDeck[entryId].FaceURL = url
             end
-
-            xml = xml .. string.format([[
-                <Cell>
-                    <Button width="%d" height="%d" image="%s" onClick="landClicked(%s)" />
-                </Cell>
-            ]],
-                    buttonWidth, buttonHeight, urlPrefix .. "small" .. image, groupName
-            )
-
-            index = index + 1
         end
     end
 
-    return string.format([[
-        <VerticalScrollView id="landSelect" active="false" width="1520" height="800" position="1000 -680 45" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
-            <TableLayout width="1500" height="%d">
-                <Row preferredHeight="%d">]] .. xml .. [[</Row>
-            </TableLayout>
-        </VerticalScrollView>
-    ]],
-            (math.floor(index / cols) + 1) * buttonHeight, buttonHeight)
-end
-
-function getLandTypesSelectXml()
-    return getLandTypeSelectXml("plains")
-            .. getLandTypeSelectXml("island")
-            .. getLandTypeSelectXml("swamp")
-            .. getLandTypeSelectXml("mountain")
-            .. getLandTypeSelectXml("forest")
-end
-
-function getLandTypeSelectXml(landType)
-    local cols = 20
-    local buttonWidth = 75
-    local buttonHeight = 100
-    local xml = ""
-    local index = 0
-
-    for groupName, lands in pairs(landImages) do
-        if lands[landType] then
-            local image = lands[landType]
-            local col = index % cols
-            local row = math.floor(index / cols)
-
-            if col == 0 and row > 0 then
-                xml = xml .. [[</Row><Row preferredHeight="100">]]
-            end
-
-            xml = xml .. string.format([[
-                <Cell>
-                    <Button width="%d" height="%d" image="%s" onClick="%sClicked(%s)" />
-                </Cell>
-            ]],
-                    buttonWidth, buttonHeight, urlPrefix .. "small" .. image, landType, image
-            )
-
-            index = index + 1
+    if containedDeckData.Name == "Card" or containedDeckData.Name == "CardCustom" then
+        updateCard(containedDeckData)
+    elseif containedDeckData.Name == "Deck" or containedDeckData.Name == "DeckCustom" then
+        for _, card in pairs(containedDeckData.ContainedObjects or {}) do
+            updateCard(card)
         end
     end
-
-    return string.format([[
-        <VerticalScrollView id="]] .. landType .. [[Select" active="false" width="1520" height="800" position="1000 -680 45" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
-            <TableLayout width="1500" height="%d">
-                <Row preferredHeight="%d">]] .. xml .. [[</Row>
-            </TableLayout>
-        </VerticalScrollView>
-    ]],
-            (math.floor(index / cols) + 1) * buttonHeight, buttonHeight)
 end
 
-function getSelectionXml()
-    return string.format([[
-            <Button position="0 0 -52" width="50" height="50" image="https://cdn-icons-png.flaticon.com/512/3592/3592953.png" onClick="toggleConfig" />
-
-            <Panel id="preview">
-                <Image position="200 -140 45" width="100" height="133" image="%s" id="plainsPreview" />
-                <Image position="100 -140 45" width="100" height="133" image="%s" id="islandPreview" />
-                <Image position="0 -140 45" width="100" height="133" image="%s" id="swampPreview" />
-                <Image position="-100 -140 45" width="100" height="133" image="%s" id="mountainPreview" />
-                <Image position="-200 -140 45" width="100" height="133" image="%s" id="forestPreview" />
-            </Panel>
-
-            <Panel id="config" active="false" width="300" height="70" offsetXY="0 -150" color="#FFFFFF" outline="#666666" outlineSize="2 -2">
-                <Row color="#999999" width="300">
-                    <Text id="WindowTitle" text="Config Options" fontSize="18" fontStyle="Bold" color="#000000" rectAlignment="UpperCenter" alignment="LowerCenter" width="230" height="80" offsetXY="0 55" />
-                </Row>
-                <TableLayout width="300" height="40" columnWidths="100 200" rectAlignment="UpperMiddle" offsetXY="0 -15" cellPadding="2" color="#FFFFFF">
-                    <Row preferredHeight="40">
-                        <Cell>
-                            <Text text="Group Lands:"/>
-                        </Cell>
-                        <Cell>
-                            <ToggleButton id="toggleGroupLands" text="Yes" isOn="true" onValueChanged="toggleGroupLands()"/>
-                        </Cell>
-                    </Row>
-                </TableLayout>
-            </Panel>
-
-            <Panel id="selection" active="false">
-                <Button position="340 0 45" width="300" height="390" image="%s" id="plains" onClick="showLandSelectUI(plains)" />
-                <Button position="660 0 45" width="300" height="390" image="%s" id="island" onClick="showLandSelectUI(island)" />
-                <Button position="980 0 45" width="300" height="390" image="%s" id="swamp" onClick="showLandSelectUI(swamp)" />
-                <Button position="1300 0 45" width="300" height="390" image="%s" id="mountain" onClick="showLandSelectUI(mountain)" />
-                <Button position="1620 0 45" width="300" height="390" image="%s" id="forest" onClick="showLandSelectUI(forest)" />
-                <Panel id="groupedLandsTexts">
-                    <Text position="340 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
-                    <Text position="660 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
-                    <Text position="980 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
-                    <Text position="1300 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
-                    <Text position="1620 -210 45" width="300" height="100" color="white" fontSize="24">Select Lands</Text>
-                </Panel>
-                <Panel id="ungroupedLandsTexts" active="false">
-                    <Text position="340 -210 45" width="300" height="100" color="white" fontSize="24">Select Plains</Text>
-                    <Text position="660 -210 45" width="300" height="100" color="white" fontSize="24">Select Island</Text>
-                    <Text position="980 -210 45" width="300" height="100" color="white" fontSize="24">Select Swamp</Text>
-                    <Text position="1300 -210 45" width="300" height="100" color="white" fontSize="24">Select Mountain</Text>
-                    <Text position="1620 -210 45" width="300" height="100" color="white" fontSize="24">Select Forest</Text>
-                </Panel>
-            </Panel>
-        ]],
-            urlPrefix .. "small" .. selections.plains,
-            urlPrefix .. "small" .. selections.island,
-            urlPrefix .. "small" .. selections.swamp,
-            urlPrefix .. "small" .. selections.mountain,
-            urlPrefix .. "small" .. selections.forest,
-            urlPrefix .. "large" .. selections.plains,
-            urlPrefix .. "large" .. selections.island,
-            urlPrefix .. "large" .. selections.swamp,
-            urlPrefix .. "large" .. selections.mountain,
-            urlPrefix .. "large" .. selections.forest
-    )
-end
-
-function showLandSelectUI(player, type)
-    local index = type .. "Select"
-
-    if (selections.groupLands) then
-        index = "landSelect"
-    end
-
-    if show[index] then
-        self.UI.hide(index)
-        show[index] = false
-    else
-        hideAllSelects(index)
-    end
-end
-
-function landClicked(player, groupName)
-    local group = landImages[groupName]
-
-    if not group then
+function replaceDeckSleeves()
+    if not selections.sleeve then
         return
     end
 
-    for landType, image in pairs(group) do
-        selections[landType] = image
-        self.UI.setAttribute(landType, "image", urlPrefix .. "large" .. image)
-        self.UI.setAttribute(landType .. "Preview", "image", urlPrefix .. "small" .. image)
-    end
-
-    hideAllSelects()
-end
-
-function plainsClicked(player, image)
-    landTypeClicked("plains", image)
-end
-
-function islandClicked(player, image)
-    landTypeClicked("island", image)
-end
-
-function swampClicked(player, image)
-    landTypeClicked("swamp", image)
-end
-
-function mountainClicked(player, image)
-    landTypeClicked("mountain", image)
-end
-
-function forestClicked(player, image)
-    landTypeClicked("forest", image)
-end
-
-function landTypeClicked(landType, image)
-    if image then
-        selections[landType] = image
-        self.UI.setAttribute(landType, "image", urlPrefix .. "large" .. image)
-        self.UI.setAttribute(landType .. "Preview", "image", urlPrefix .. "small" .. image)
-    end
-
-    hideAllSelects()
-end
-
-function toggleGroupLands(player, toggle)
-    if toggle == "True" then
-        selections.groupLands = true
-    else
-        selections.groupLands = false
-    end
-
-    if selections.groupLands then
-        self.UI.hide("ungroupedLandsTexts")
-        self.UI.show("groupedLandsTexts")
-        self.UI.setAttribute("toggleGroupLands", "text", "Yes")
-    else
-        self.UI.hide("groupedLandsTexts")
-        self.UI.show("ungroupedLandsTexts")
-        self.UI.setAttribute("toggleGroupLands", "text", "No")
-    end
-
-    hideAllSelects()
-end
-
-function toggleConfig()
-    if configOpen then
-        self.UI.hide("config")
-        self.UI.hide("selection")
-        self.UI.show("preview")
-        configOpen = false
-    else
-        if not uiLoaded then
-            uiLoaded = true
-            self.UI.setXml(getLandSelectXml() .. getLandTypesSelectXml() .. getSelectionXml())
-            Wait.frames(function()
-                self.UI.show("config")
-                self.UI.show("selection")
-                self.UI.hide("preview")
-            end, 20)
-        else
-            self.UI.show("config")
-            self.UI.show("selection")
-            self.UI.hide("preview")
+    local function replaceDeckBackURL(data)
+        if not data.CustomDeck then
+            return
         end
-        configOpen = true
+
+        for _, entry in pairs(data.CustomDeck) do
+            entry.BackURL = selections.sleeve
+        end
     end
 
-    hideAllSelects()
+    if containedDeckData.Name == "Card" or containedDeckData.Name == "CardCustom" then
+        replaceDeckBackURL(containedDeckData)
+    elseif containedDeckData.Name == "Deck" or containedDeckData.Name == "DeckCustom" then
+        replaceDeckBackURL(containedDeckData)
+        for _, cardData in pairs(containedDeckData.ContainedObjects) do
+            replaceDeckBackURL(cardData)
+        end
+    end
+end
+
+function compareCards(a, b, sortBy)
+    local fields = {}
+    for field in sortBy:gmatch("[^_]+") do
+        table.insert(fields, field)
+    end
+
+    local function getValue(card, field)
+        if field == "name" then
+            return getName(card)
+        elseif field == "cmc" then
+            return getCmc(card)
+        elseif field == "type" then
+            return getType(card)
+        end
+        return ""
+    end
+
+    for _, field in ipairs(fields) do
+        local va = getValue(a, field)
+        local vb = getValue(b, field)
+
+        if va ~= vb then
+            return va < vb
+        end
+    end
+end
+
+function getFirstFaceURL(card)
+    if not card.CustomDeck then
+        return
+    end
+
+    for _, deckDef in pairs(card.CustomDeck) do
+        if deckDef.FaceURL then
+            return deckDef.FaceURL
+        end
+    end
+end
+
+function getName(card)
+    local parts = {}
+    for s in card.Nickname:gmatch("([^\n]+)") do
+        table.insert(parts, s)
+    end
+    return parts[1] or "Unknown"
+end
+
+function getType(card)
+    local parts = {}
+    for s in card.Nickname:gmatch("([^\n]+)") do
+        table.insert(parts, s)
+    end
+    return parts[2] or "Unknown"
+end
+
+function getCmc(card)
+    local cmc = tonumber(card.Nickname:match("(%d+)%s*CMC"))
+    if cmc then
+        return cmc
+    end
+
+    return 0
+end
+
+function ejectDeck()
+    self.takeObject()
+end
+
+function createLabelButton()
+    self.clearButtons()
+    self.createButton({
+        click_function = "null",
+        function_owner = self,
+        label = "ULTIMATE\nMTG Deck\nEnhancer",
+        position = { 0, 0.61, 0 },
+        scale = { 0.5, 0.5, 0.5 },
+        rotation = { 180, 0, 180 },
+        color = { 0.1, 0.1, 0.1, 0.8 },
+        font_color = { 1, 1, 1, 1 },
+        width = 0,
+        height = 0,
+        font_size = 200,
+    })
+end
+
+function playTriggerEffect()
+    local effects = self.AssetBundle.getTriggerEffects()
+    if effects and #effects > 0 then
+        self.AssetBundle.playTriggerEffect(math.random(1, #effects - 1))
+    end
+end
+
+function spawnNewDeck(callback)
+    containedDeckData.DeckIDs = {}
+    for _, card in ipairs(containedDeckData.ContainedObjects) do
+        table.insert(containedDeckData.DeckIDs, card.CardID)
+    end
+
+    local startPos = self.getPosition() + Vector(0, 1, 0)
+    local endPos = self.getPosition() + Vector(0, 8, -4)  -- rises from 2 to 8
+    local finalRotation = self.getRotation() + Vector(0, 180, 180)
+    local spinTime = 2       -- total spin duration
+    local rotations = 8      -- number of full 360° rotations
+    local steps = 60         -- updates for smooth spin
+    local delay = spinTime / steps
+    local spinAngle = (360 * rotations) / steps
+
+    spawnObjectData({
+        data = containedDeckData,
+        position = startPos,
+        rotation = self.getRotation() + Vector(0, 180, 180),
+        callback_function = function(deck)
+            if not deck then
+                return
+            end
+
+            -- spin and rise animation
+            deck.setLock(true)  -- lock deck to prevent falling
+            for i = 1, steps do
+                Wait.time(function()
+                    if not deck then
+                        return
+                    end
+
+                    -- spin
+                    local rot = deck.getRotation()
+                    deck.setRotationSmooth(rot + Vector(0, spinAngle, 0), false, true)
+
+                    -- rise smoothly
+                    local t = i / steps
+                    local pos = Vector(
+                            startPos.x,
+                            startPos.y + (endPos.y - startPos.y) * t,
+                            startPos.z + (endPos.z - startPos.z) * t
+                    )
+                    deck.setPositionSmooth(pos, false, true)
+                end, delay * i)
+            end
+
+            -- finalize position and rotation after spinning
+            Wait.time(function()
+                if deck then
+                    deck.setPositionSmooth(endPos, false, true)
+                    deck.setRotationSmooth(finalRotation, false, true)
+                    deck.setLock(false)  -- unlock after it lands
+                    callback()
+                end
+            end, spinTime)
+        end
+    })
 end
