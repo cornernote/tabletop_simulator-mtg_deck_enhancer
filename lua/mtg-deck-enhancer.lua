@@ -3,6 +3,9 @@
 -- Most recent script can be found on GitHub:
 -- https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer/blob/main/lua/mtg-deck-enhancer.lua
 
+-- TODO - allow single card to drop in
+-- TODO - effects make the game lag
+
 local containedDeckData = null
 local defaults = {
     sortBy = null,
@@ -1229,7 +1232,7 @@ tools.deckSorter = {
         local buttonWidth = 30
         local buttonHeight = 45
 
-        local cardsInContainerDeck = collapseDeck(containedDeckData.ContainedObjects)
+        local cardsInContainerDeck = collapseDeck(containedDeckData)
 
         local function getSortBarXml()
             local sortBarXml = {}
@@ -1349,7 +1352,7 @@ function tryObjectEnter(object)
 
     local data = object.getData()
 
-    if data.Name ~= "Deck" and data.Name ~= "DeckCustom" then
+    if data.Name ~= "Deck" and data.Name ~= "DeckCustom" and data.Name ~= "Card" and data.Name ~= "CardCustom" then
         return false
     end
 
@@ -1537,17 +1540,22 @@ function onLandClicked(player, landType, landImageUri)
     end
 end
 
-function collapseDeck(cards)
+function collapseDeck(deck)
     local uniqueCards = {}
 
-    for _, card in ipairs(cards or {}) do
-        local key = card.Nickname
-        if not uniqueCards[key] then
-            card.Quantity = 1
-            uniqueCards[key] = card
-        else
-            uniqueCards[key].Quantity = uniqueCards[key].Quantity + 1
+    if deck.ContainedObjects then
+        for _, card in ipairs(deck.ContainedObjects or {}) do
+            local key = card.Nickname
+            if not uniqueCards[key] then
+                uniqueCards[key] = card
+                uniqueCards[key].Quantity = 1
+            else
+                uniqueCards[key].Quantity = uniqueCards[key].Quantity + 1
+            end
         end
+    else
+        uniqueCards[deck.Nickname] = deck
+        uniqueCards[deck.Nickname].Quantity = 1
     end
 
     local result = {}
@@ -1751,8 +1759,10 @@ end
 
 function spawnNewDeck(callback)
     containedDeckData.DeckIDs = {}
-    for _, card in ipairs(containedDeckData.ContainedObjects) do
-        table.insert(containedDeckData.DeckIDs, card.CardID)
+    if containedDeckData.ContainedObjects then
+        for _, card in ipairs(containedDeckData.ContainedObjects) do
+            table.insert(containedDeckData.DeckIDs, card.CardID)
+        end
     end
 
     local startPos = self.getPosition() + Vector(0, 1, 0)
