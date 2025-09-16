@@ -1,8 +1,6 @@
--- TODO - effects make the game lag
-
 local AutoUpdater = {
     name = "ULTIMATE MTG Deck Enhancer",
-    version = "4.1.0",
+    version = "4.1.1",
     versionUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/deck-enhancer.ver",
     scriptUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/deck-enhancer.lua",
 
@@ -66,6 +64,7 @@ local AutoUpdater = {
 
 local containedDeckData = null
 local defaults = {
+    enableAnimations = null,
     sortBy = null,
     sleeve = null,
     plains = null,
@@ -1853,6 +1852,9 @@ function createLabelButton()
 end
 
 function playTriggerEffect()
+    if not selections.enableAnimations then
+        return
+    end
     if not self.AssetBundle then
         return
     end
@@ -1864,6 +1866,36 @@ function playTriggerEffect()
 end
 
 function spawnNewDeck(callback)
+    if selections.enableAnimations then
+        return spawnNewDeckAnimation(callback)
+    end
+
+    containedDeckData.DeckIDs = {}
+    if containedDeckData.ContainedObjects then
+        for _, card in ipairs(containedDeckData.ContainedObjects) do
+            table.insert(containedDeckData.DeckIDs, card.CardID)
+        end
+    end
+
+    local startPos = self.getPosition() + Vector(0, 1, 0)
+    local endPos = self.getPosition() + Vector(0, 2, -4)
+
+    spawnObjectData({
+        data = containedDeckData,
+        position = startPos,
+        rotation = self.getRotation() + Vector(0, 180, 180),
+        callback_function = function(deck)
+            if not deck then
+                return
+            end
+
+            deck.setPositionSmooth(endPos, false, true)
+            callback()
+        end
+    })
+end
+
+function spawnNewDeckAnimation(callback)
     containedDeckData.DeckIDs = {}
     if containedDeckData.ContainedObjects then
         for _, card in ipairs(containedDeckData.ContainedObjects) do
