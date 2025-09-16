@@ -1,8 +1,13 @@
 local AutoUpdater = {
     name = "ULTIMATE MTG Deck Enhancer",
-    version = "4.1.2",
+    version = "4.1.3",
     versionUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/mtg-deck-enhancer.ver",
     scriptUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/mtg-deck-enhancer.lua",
+
+    run = function(self, host)
+        self.host = host
+        self:checkForUpdate()
+    end,
 
     isNewerVersion = function(self, remoteVersion)
         local function split(v)
@@ -1432,8 +1437,7 @@ function onLoad(save_state)
 
     createLabelButton()
 
-    AutoUpdater.host = self
-    AutoUpdater:checkForUpdate()
+    AutoUpdater:run(self)
 end
 
 function tryObjectEnter(object)
