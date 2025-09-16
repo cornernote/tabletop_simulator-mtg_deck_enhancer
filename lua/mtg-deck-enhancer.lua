@@ -1,6 +1,8 @@
+-- TODO - effects make the game lag
+
 local AutoUpdater = {
     name = "ULTIMATE MTG Deck Enhancer",
-    version = "4.0.0",
+    version = "4.1.0",
     versionUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/deck-enhancer.ver",
     scriptUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/deck-enhancer.lua",
 
@@ -61,8 +63,6 @@ local AutoUpdater = {
         end)
     end,
 }
-
--- TODO - effects make the game lag
 
 local containedDeckData = null
 local defaults = {
@@ -1116,6 +1116,7 @@ local sortByOptions = {
     cmc_type_name = "CMC + Type + Name",
 }
 local activeTool = null
+local currentLandPage = 1
 local tools = {}
 tools.landSwapper = {
     label = "Land Swapper",
@@ -1155,28 +1156,46 @@ tools.landSwapper = {
         local cols = 20
         local buttonWidth = 75
         local buttonHeight = 100
-        local xml = ""
-        local index = 0
+        local rowsPerPage = 8
+
+        local buttons = {}
 
         for groupName, lands in pairs(landImages) do
             for landType, image in pairs(lands) do
-                local col = index % cols
-                local row = math.floor(index / cols)
-
-                if col == 0 and row > 0 then
-                    xml = xml .. [[</Row><Row preferredHeight="100">]]
-                end
-
-                xml = xml .. string.format([[
-                        <Cell>
-                            <Button width="%d" height="%d" image="%s" onClick="onLandClicked%s(%s)" />
-                        </Cell>
-                    ]],
+                table.insert(buttons, string.format([[
+                <Cell>
+                    <Button width="%d" height="%d" image="%s" onClick="onLandClicked%s(%s)" />
+                </Cell>
+            ]],
                         buttonWidth, buttonHeight, landUrlPrefix .. "small" .. image, landType:gsub("^%l", string.upper), image
-                )
-
-                index = index + 1
+                ))
             end
+        end
+
+        local totalButtons = #buttons
+        local totalRows = math.ceil(totalButtons / cols)
+        local totalPages = math.ceil(totalRows / rowsPerPage)
+
+        if currentLandPage < 1 then
+            currentLandPage = 1
+        end
+        if currentLandPage > totalPages then
+            currentLandPage = totalPages
+        end
+
+        local startRow = (currentLandPage - 1) * rowsPerPage
+        local endRow = math.min(startRow + rowsPerPage, totalRows)
+
+        local landTableXml = ""
+        for row = startRow, endRow - 1 do
+            landTableXml = landTableXml .. [[<Row preferredHeight="100">]]
+            for col = 0, cols - 1 do
+                local idx = row * cols + col + 1
+                if idx <= totalButtons then
+                    landTableXml = landTableXml .. buttons[idx]
+                end
+            end
+            landTableXml = landTableXml .. [[</Row>]]
         end
 
         local images = JSON.decode(JSON.encode(landImages.standard))
@@ -1186,31 +1205,38 @@ tools.landSwapper = {
             end
         end
 
-        return string.format([[
-            <Panel offsetXY="710 -270" width="1520">
-                <ToggleGroup allowSwitchOff="true" height="400">
-                    <HorizontalLayout spacing="25">
-                        <Button width="300" height="390" image="%s" id="plains" onClick="onLandClickedPlains(%s)" />
-                        <Button width="300" height="390" image="%s" id="island" onClick="onLandClickedIsland(%s)" />
-                        <Button width="300" height="390" image="%s" id="swamp" onClick="onLandClickedSwamp(%s)" />
-                        <Button width="300" height="390" image="%s" id="mountain" onClick="onLandClickedMountain(%s)" />
-                        <Button width="300" height="390" image="%s" id="forest" onClick="onLandClickedForest(%s)" />
-                    </HorizontalLayout>
-                </ToggleGroup>
-                <VerticalScrollView offsetXY="0 -620" width="1520" height="800" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
-                    <TableLayout width="1500" height="%d">
-                        <Row preferredHeight="%d">]] .. xml .. [[</Row>
-                    </TableLayout>
-                </VerticalScrollView>
-            </Panel>
+        local selectedLandsXml = string.format([[
+                <HorizontalLayout spacing="25" height="400">
+                    <Button width="300" height="390" image="%s" id="plains" onClick="onLandClickedPlains(%s)" />
+                    <Button width="300" height="390" image="%s" id="island" onClick="onLandClickedIsland(%s)" />
+                    <Button width="300" height="390" image="%s" id="swamp" onClick="onLandClickedSwamp(%s)" />
+                    <Button width="300" height="390" image="%s" id="mountain" onClick="onLandClickedMountain(%s)" />
+                    <Button width="300" height="390" image="%s" id="forest" onClick="onLandClickedForest(%s)" />
+                </HorizontalLayout>
             ]],
                 landUrlPrefix .. "large" .. images.plains, images.plains,
                 landUrlPrefix .. "large" .. images.island, images.island,
                 landUrlPrefix .. "large" .. images.swamp, images.swamp,
                 landUrlPrefix .. "large" .. images.mountain, images.mountain,
-                landUrlPrefix .. "large" .. images.forest, images.forest,
-                (math.floor(index / cols) + 1) * buttonHeight,
-                buttonHeight)
+                landUrlPrefix .. "large" .. images.forest, images.forest
+        )
+
+        local navXml = string.format([[
+                <HorizontalLayout spacing="25" height="80" offsetXY="0 -1080" color="#CCCCCC">
+                    <Button width="150" fontSize="50" onClick="onLandPrevPage">Prev</Button>
+                    <Text fontSize="60" color="#000000">page %d of %d</Text>
+                    <Button width="150" fontSize="50" onClick="onLandNextPage">Next</Button>
+                </HorizontalLayout>
+            ]], currentLandPage, totalPages)
+
+        return string.format([[
+                <Panel offsetXY="710 -270" width="1500">
+                    %s
+                    <TableLayout height="800" offsetXY="0 -620">%s</TableLayout>
+                    %s
+                </Panel>
+            ]], selectedLandsXml, landTableXml, navXml
+        )
     end,
 }
 tools.sleeveChanger = {
@@ -1266,16 +1292,14 @@ tools.sleeveChanger = {
 
         return string.format([[
                 <Button offsetXY="1280 -270" width="300" height="390" image="%s" id="sleeve" onClick="onSleeveClicked(%s)" />
-                <VerticalScrollView width="%d" height="1000" offsetXY="520 -570" scrollSensitivity="30" horizontalScrollbarVisibility="AutoHideAndExpandViewport">
-                    <TableLayout width="%d" height="%d">
-                        <Row preferredHeight="100">
-                            <InputField id="sleeveInput" width="%d" height="80" fontSize="50" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput()" />
-                        </Row>
-                        <Row preferredHeight="%d">]] .. xml .. [[</Row>
-                    </TableLayout>
-                </VerticalScrollView>
+                <TableLayout width="%d" height="%d" offsetXY="520 -570">
+                    <Row preferredHeight="100">
+                        <InputField id="sleeveInput" width="%d" height="80" fontSize="50" placeholder="Enter the URL of your sleeve here" onEndEdit="onSleeveInput()" />
+                    </Row>
+                    <Row preferredHeight="%d">]] .. xml .. [[</Row>
+                </TableLayout>
             ]],
-                sleeve, sleeve, width + 20, width, height, width - 20, buttonHeight)
+                sleeve, sleeve, width, height, width, buttonHeight)
     end,
 }
 tools.deckSorter = {
@@ -1606,6 +1630,16 @@ function onLandClicked(player, landType, landImageUri)
         self.UI.setAttribute(landType, "image", landUrlPrefix .. "large" .. landImageUri)
         self.UI.setAttribute(landType, "onClick", "onLandClicked" .. landType:gsub("^%l", string.upper) .. "(" .. (selections[landType] or "") .. ")")
     end
+end
+
+function onLandPrevPage()
+    currentLandPage = currentLandPage - 1
+    drawUI()
+end
+
+function onLandNextPage()
+    currentLandPage = currentLandPage + 1
+    drawUI()
 end
 
 function collapseDeck(deck)
