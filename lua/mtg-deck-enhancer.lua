@@ -1,9 +1,67 @@
--- ULTIMATE MTG Deck Enhancer by CoRNeRNoTe
+local AutoUpdater = {
+    name = "ULTIMATE MTG Deck Enhancer",
+    version = "4.0.0",
+    versionUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/deck-enhancer.ver",
+    scriptUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/deck-enhancer.lua",
 
--- Most recent script can be found on GitHub:
--- https://github.com/cornernote/tabletop_simulator-mtg_deck_enhancer/blob/main/lua/mtg-deck-enhancer.lua
+    isNewerVersion = function(self, remoteVersion)
+        local function split(v)
+            local t = {}
+            for n in v:gmatch("%d+") do
+                table.insert(t, tonumber(n))
+            end
+            return t
+        end
 
--- TODO - allow single card to drop in
+        local r, l = split(remoteVersion), split(self.version)
+        for i = 1, math.max(#r, #l) do
+            local rv, lv = r[i] or 0, l[i] or 0
+            if rv > lv then
+                return true
+            end
+            if rv < lv then
+                return false
+            end
+        end
+        return false
+    end,
+
+    fetchNewScript = function(self, newVersion)
+        WebRequest.get(self.scriptUrl, function(request)
+            if request.response_code ~= 200 then
+                return
+            end
+            if request.text and #request.text > 0 then
+                self.host.setLuaScript(request.text)
+                print(self.name .. ": Updated to version " .. newVersion)
+                Wait.condition(function()
+                    if self.host then
+                        self.host.reload()
+                    end
+                end, function()
+                    return not self.host or self.host.resting
+                end)
+            end
+        end)
+    end,
+
+    checkForUpdate = function(self)
+        if not self.host then
+            return
+        end
+        WebRequest.get(self.versionUrl, function(request)
+            if request.response_code ~= 200 then
+                print(self.name .. ": Failed to check version (" .. request.response_code .. ")")
+                return
+            end
+            local remoteVersion = request.text:match("[^\r\n]+") or ""
+            if remoteVersion ~= "" and self:isNewerVersion(remoteVersion) then
+                self:fetchNewScript(remoteVersion)
+            end
+        end)
+    end,
+}
+
 -- TODO - effects make the game lag
 
 local containedDeckData = null
@@ -832,6 +890,13 @@ local landImages = {
         mountain = "/front/8/e/8e3c2e1a-181e-4275-ad09-51c9de039d32.jpg",
         forest = "/front/b/3/b3ed8a17-ce32-4100-8ffc-fb8af1c35142.jpg",
     },
+    TLA = {
+        plains = "/front/8/a/8a880169-41ca-4507-83fd-306a489d31ce.jpg",
+        island = "/front/d/8/d894c61a-4062-442e-8ead-5197c3bffd00.jpg",
+        swamp = "/front/8/7/874f0f27-81a4-4853-aaa0-2c15e07c177e.jpg",
+        mountain = "/front/e/a/ea96ecc4-72f3-46a4-8900-6a7c5a83d4df.jpg",
+        forest = "/front/0/5/05683891-cdd4-4401-b7d5-0ef17e79c699.jpg",
+    },
     -- leftovers (less than 5 types)
     SLP = {
         plains = "/front/a/f/afc24e1d-2fb0-46eb-926b-7345741d443e.jpg", -- 31
@@ -1343,6 +1408,9 @@ function onLoad(save_state)
     end)
 
     createLabelButton()
+
+    AutoUpdater.host = self
+    AutoUpdater:checkForUpdate()
 end
 
 function tryObjectEnter(object)
@@ -1751,6 +1819,10 @@ function createLabelButton()
 end
 
 function playTriggerEffect()
+    if not self.AssetBundle then
+        return
+    end
+
     local effects = self.AssetBundle.getTriggerEffects()
     if effects and #effects > 0 then
         self.AssetBundle.playTriggerEffect(math.random(1, #effects - 1))

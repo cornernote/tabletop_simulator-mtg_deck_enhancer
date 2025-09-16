@@ -1,4 +1,4 @@
-[FFD000]ULTIMATE[cccccc] MTG Deck Enhancer v3.0[ffffff]
+[FFD000]ULTIMATE[cccccc] MTG Deck Enhancer[ffffff]
 
 INSTRUCTIONS:
 - Drop a deck onto the enhancer
