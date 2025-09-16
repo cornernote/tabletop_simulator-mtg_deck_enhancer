@@ -1,6 +1,6 @@
 local AutoUpdater = {
     name = "ULTIMATE MTG Deck Enhancer",
-    version = "4.1.1",
+    version = "4.1.2",
     versionUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/mtg-deck-enhancer.ver",
     scriptUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/mtg-deck-enhancer.lua",
 
@@ -1223,7 +1223,7 @@ tools.landSwapper = {
         local navXml = string.format([[
                 <HorizontalLayout spacing="25" height="80" offsetXY="0 -1080" color="#CCCCCC">
                     <Button width="150" fontSize="50" onClick="onLandPrevPage">Prev</Button>
-                    <Text fontSize="60" color="#000000">page %d of %d</Text>
+                    <Text fontSize="45" color="#000000">page %d of %d</Text>
                     <Button width="150" fontSize="50" onClick="onLandNextPage">Next</Button>
                 </HorizontalLayout>
             ]], currentLandPage, totalPages)
@@ -1839,7 +1839,7 @@ function createLabelButton()
     self.createButton({
         click_function = "null",
         function_owner = self,
-        label = "ULTIMATE\nMTG Deck\nEnhancer",
+        label = "drop\ndeck\nhere",
         position = { 0, 0.61, 0 },
         scale = { 0.5, 0.5, 0.5 },
         rotation = { 180, 0, 180 },
