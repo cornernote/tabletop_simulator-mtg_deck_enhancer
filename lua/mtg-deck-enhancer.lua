@@ -1,6 +1,6 @@
 local AutoUpdater = {
     name = "ULTIMATE MTG Deck Enhancer",
-    version = "4.1.4",
+    version = "4.1.5",
     versionUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/mtg-deck-enhancer.ver",
     scriptUrl = "https://raw.githubusercontent.com/cornernote/tabletop_simulator-mtg_deck_enhancer/refs/heads/main/lua/mtg-deck-enhancer.lua",
     debug = false,
