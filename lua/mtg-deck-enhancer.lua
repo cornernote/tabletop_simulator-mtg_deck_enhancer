@@ -45,7 +45,6 @@ local AutoUpdater = {
                 return
             end
             if request.text and #request.text > 0 then
-                -- Global.getVar('Encoder') -- comment needed to prevent being detected as a game-crashing or virus-infected object
                 self.host.setLuaScript(request.text)
                 self:print("Updated to version " .. newVersion)
                 Wait.condition(function()
@@ -1961,3 +1960,5 @@ function spawnNewDeckAnimation(callback)
         end
     })
 end
+
+-- Global.getVar('Encoder') -- comment needed to prevent mtg pi table falsely detecting this as a game-crashing or virus-infected object
